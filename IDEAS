@@ -1,0 +1,52 @@
+Actions:
+-S - sync the modlist
+-Q - query for a mod
+-I - install a mod
+-U - update mods
+-R - remove mods
+
+Settings:
+~/.3m/config
+
+Local files:
+- main binary
+- local modlist.3mlm
+- config
+
+Remote files:
+- Official server: modlist.3mml
+- Mod repositories: modinfo.3mmi
+
+modlist.3mml Format:
+{modname}
+[server]
+srv_addr
+[modinfo]
+/modinfo/path/at/server
+{end}
+
+modinfo.3mmi Format:
+[name]
+mod_name
+[version]
+current_version
+[repotype]
+repository_type (zip/git)
+[repoaddr]
+repository_address_or_path_to_a_remote_zip_file
+
+modlist.3mlm Format:
+{modname}
+[version]
+current_version
+[repotype]
+repository_type
+[repoaddr]
+repository_address
+{end}
+
+Settings:
+[localpath]
+path_to_local_minetest_mods_repo
+[modlist]
+path_to_modlist_3mml
