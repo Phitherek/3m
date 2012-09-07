@@ -11,6 +11,7 @@ Settings:
 Local files:
 - main binary
 - local modlist.3mlm
+- local repoinfo.3mri
 - config
 
 Remote files:
@@ -43,6 +44,12 @@ current_version
 repository_type
 [repoaddr]
 repository_address
+{end}
+
+modinfo.3mri Format:
+{modname}
+[version]
+installed_version
 {end}
 
 Settings:
