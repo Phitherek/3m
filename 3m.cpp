@@ -102,6 +102,7 @@ return 1;
 *repoinfo = line;
 action = "parse";
 } else if(action == "end") {
+conf.close();
 return 0;	
 }
 }
