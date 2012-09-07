@@ -47,16 +47,17 @@ string line = "";
 conf >> line;
 if(conf) {
 if(action == "parse") {
-if(line[0] = "[") {
-string sa = "";
+if(line[0] == '[') {
 int i = 1;
-while(line[i] != "]") {
-if(i >= line.length()-1 && line[i] != "]") {
+string sa = "";
+while(line[i] != ']') {
+if(i >= line.length()-1 && line[i] != ']') {
 cerr << "Config parse error: Found " << line[i] << " although ] was expected." << endl;
 conf.close();
 return 1;
 }
 sa += line[i];
+i++;
 }
 if(sa == "localpath") {
 action = "localpath";
@@ -64,38 +65,44 @@ action = "localpath";
 action = "modlist";
 } else if(sa == "repoinfo") {
 action = "repoinfo";
+} else if(sa == "end") {
+action = "end";
 } else {
 cerr << "Config parse error: Found " << sa << " although localpath, modlist or repoinfo was expected." << endl;
 conf.close();
 return 1;
 }
 } else {
-cerr << "Config parse error: Found " << line[i] << " although [ was expected." << endl;
+cerr << "Config parse error: Found " << line[0] << " although [ was expected." << endl;
 conf.close();
 return 1;
 }
 } else if(action == "localpath") {
-if(line[0] == "[") {
+if(line[0] == '[') {
 cerr << "Config parse error: Found [ although string and not option was expected." << endl;
 conf.close();
 return 1;
 }
-localpath = line;
+*localpath = line;
+action = "parse";
 } else if(action == "modlist") {
-if(line[0] == "[") {
+if(line[0] == '[') {
 cerr << "Config parse error: Found [ although string and not option was expected." << endl;
 conf.close();
 return 1;
 }
-modlist = line;
+*modlist = line;
+action = "parse";
 } else if(action == "repoinfo") {
-if(line[0] == "[") {
+if(line[0] == '[') {
 cerr << "Config parse error: Found [ although string and not option was expected." << endl;
 conf.close();
 return 1;
 }
-repoinfo = line;
-}
+*repoinfo = line;
+action = "parse";
+} else if(action == "end") {
+return 0;	
 }
 }
 }
@@ -105,7 +112,7 @@ return 0;
 int main(int argc, char **argv) {
 homedir = getenv("HOME");	
 string config;
-sstream sconfig;
+stringstream sconfig;
 sconfig << homedir << "/.3m/config";
 config = sconfig.str();
 int ps;
