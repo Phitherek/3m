@@ -28,6 +28,14 @@ string server;
 string modinfo;
 };
 
+struct rmodinfo {
+string name;
+string description;
+int release;
+string repotype;
+string repoaddr;
+};
+
 void *get_in_addr(sockaddr *sa) { // IP Address obtaining by protocol
 if(sa->sa_family == AF_INET) {
 return &(((sockaddr_in*)sa) -> sin_addr);
@@ -207,6 +215,195 @@ while(!rmfile.eof()) {
 }
 }
 *pmodlists = tmpv;
+return 0;
+}
+
+int parsermodlist(vector<rmodlistdata> *rmodlist, string mfn) {
+ifstream modlist(mfn.c_str());
+vector<rmodlistdata> tmpv = *rmodlist;
+if(!modlist) {
+	cerr << "Modlist parse error: Cannot open modlist file for reading." << endl;
+}
+string action = "detect";
+rmodlistdata tmprmld;
+while(!modlist.eof()) {
+	string line;
+	modlist >> line;
+	if(modlist) {
+	if(action == "detect") {
+		if(line[0] == '{') {
+		string name = "";
+		for(int i = 1; line[i] != '}' && i < line.length(); i++) {
+			name += line[i];
+		}
+		tmprmld.name = name;
+		action = "parse";
+		} else {
+			cerr << "Modlist parse error: Found " << line[0] << " although { was expected." << endl;
+			modlist.close();
+			return 1;
+		}
+	} else if(action == "parse") {
+	if(line[0] == '{') {
+		if(line[1] == 'e' && line[2] == 'n' && line[3] == 'd' && line[4] == '}') {
+			if(tmprmld.name != "" && tmprmld.server != "" && tmprmld.modinfo != "") {
+				tmpv.push_back(tmprmld);
+			} else {
+				cerr << "Modlist parse error: Data error." << endl;
+				modlist.close();
+				return 1;
+			}
+		action = "detect";
+		} else {
+			cerr << "Modlist parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			modlist.close();
+			return 1;
+		}
+	} else if(line[0] == '[') {
+		string tmpact = "";
+		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		tmpact += line[i];
+		}
+		if(tmpact == "server" || tmpact == "modinfo") {
+		action = tmpact;	
+		} else {
+			cerr << "Modlist parse error: Found " << tmpact << " although server/modinfo was expected." << endl;
+			modlist.close();
+			return 1;
+		}
+	} else {
+		cerr << "Modlist parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			modlist.close();
+			return 1;
+	}
+	} else if(action == "server") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			modlist.close();
+			return 1;
+		} else {
+			tmprmld.server = line;
+			action = "parse";
+		}
+	} else if(action == "modinfo") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			modlist.close();
+			return 1;
+		} else {
+			tmprmld.modinfo = line;
+			action = "parse";
+		}
+	} else {
+		cerr << "Modlist parse error: The program should not reach this place!" << endl;
+		modlist.close();
+		return 1;
+	}
+}
+}
+*rmodlist = tmpv;
+return 0;
+}
+
+int parsemodinfo(rmodinfo *mis, string mfn) {
+ifstream modinfo(mfn.c_str());
+rmodinfo tmp = *mis;
+if(!modinfo) {
+	cerr << "Modinfo parse error: Cannot open modinfo file for reading." << endl;
+}
+string action = "detect";
+while(!modinfo.eof()) {
+	string line = "";
+	char ch;
+	modinfo.get(ch);
+	while(ch != '\n') { 
+	line += ch;
+	modinfo.get(ch);	
+	}
+	if(modinfo) {
+	if(action == "detect") {
+		if(line[0] == '{') {
+		string name = "";
+		for(int i = 1; line[i] != '}' && i < line.length(); i++) {
+			name += line[i];
+		}
+		tmp.name = name;
+		action = "parse";
+		} else {
+			cerr << "Modinfo parse error: Found " << line[0] << " although { was expected." << endl;
+			modinfo.close();
+			return 1;
+		}
+	} else if(action == "parse") {
+	if(line[0] == '{') {
+		if(line[1] == 'e' && line[2] == 'n' && line[3] == 'd' && line[4] == '}') {
+		action = "detect";
+		} else {
+			cerr << "Modinfo parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			modinfo.close();
+			return 1;
+		}
+	} else if(line[0] == '[') {
+		string tmpact = "";
+		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		tmpact += line[i];
+		}
+		if(tmpact == "description" || tmpact == "release" || tmpact == "repotype" || tmpact == "repoaddr") {
+		action = tmpact;	
+		} else {
+			cerr << "Modinfo parse error: Found " << tmpact << " although description/release/repotype/repoaddr was expected." << endl;
+			modinfo.close();
+			return 1;
+		}
+	} else {
+		cerr << "Modinfo parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			modinfo.close();
+			return 1;
+	}
+	} else if(action == "description") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
+			modinfo.close();
+			return 1;
+		} else {
+			tmp.description = line;
+			action = "parse";
+		}
+	} else if(action == "release") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
+			modinfo.close();
+			return 1;
+		} else {
+			tmp.release = atoi(line.c_str());
+			action = "parse";
+		}
+	} else if(action == "repotype") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
+			modinfo.close();
+			return 1;
+		} else {
+			tmp.repotype = line;
+			action = "parse";
+		}
+	} else if(action == "repoaddr") {
+	if(line[0] == '[' || line[0] == '{') {
+			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
+			modinfo.close();
+			return 1;
+		} else {
+			tmp.repoaddr = line;
+			action = "parse";
+		}
+	} else {
+		cerr << "Modinfo parse error: The program should not reach this place!" << endl;
+		modinfo.close();
+		return 1;
+	}
+}
+}
+*mis = tmp;
 return 0;
 }
 
