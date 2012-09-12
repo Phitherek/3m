@@ -22,6 +22,12 @@ string server;
 string path;
 };
 
+struct rmodlistdata {
+string name;
+string server;
+string modinfo;
+};
+
 void *get_in_addr(sockaddr *sa) { // IP Address obtaining by protocol
 if(sa->sa_family == AF_INET) {
 return &(((sockaddr_in*)sa) -> sin_addr);
