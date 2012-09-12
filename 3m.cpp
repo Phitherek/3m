@@ -10,10 +10,17 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <vector>
 using namespace std;
 
 int socdesc; // Socket descriptor
 string homedir, errmsg, req; // Home directory, error message, request
+
+struct modlistdata {
+string name;
+string server;
+string path;
+};
 
 void *get_in_addr(sockaddr *sa) { // IP Address obtaining by protocol
 if(sa->sa_family == AF_INET) {
@@ -107,6 +114,93 @@ return 0;
 }
 }
 }
+return 0;
+}
+
+int parsemodlists(vector<modlistdata> *pmodlists, string rmfn) {
+ifstream rmfile(rmfn.c_str());
+vector<modlistdata> tmpv = *pmodlists;
+if(!rmfile) {
+	cerr << "Remote modlist list parse error: Cannot open remote modlist file for reading" << endl;
+}
+string action = "detect";
+modlistdata tmpmld;
+while(!rmfile.eof()) {
+	string line;
+	rmfile >> line;
+	if(rmfile) {
+	if(action == "detect") {
+		if(line[0] == '{') {
+		string name = "";
+		for(int i = 1; line[i] != '}' && i < line.length(); i++) {
+			name += line[i];
+		}
+		tmpmld.name = name;
+		action = "parse";
+		} else {
+			cerr << "Remote modlist list parse error: Found " << line[0] << " although { was expected." << endl;
+			rmfile.close();
+			return 1;
+		}
+	} else if(action == "parse") {
+	if(line[0] == '{') {
+		if(line[1] == 'e' && line[2] == 'n' && line[3] == 'd' && line[4] == '}') {
+			if(tmpmld.name != "" && tmpmld.server != "" && tmpmld.path != "") {
+				tmpv.push_back(tmpmld);
+			} else {
+				cerr << "Remote modlist list parse error: Data error." << endl;
+				rmfile.close();
+				return 1;
+			}
+		action = "detect";
+		} else {
+			cerr << "Remote modlist list parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			rmfile.close();
+			return 1;
+		}
+	} else if(line[0] == '[') {
+		string tmpact = "";
+		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		tmpact += line[i];
+		}
+		if(tmpact == "server" || tmpact == "path") {
+		action = tmpact;	
+		} else {
+			cerr << "Remote modlist list parse error: Found " << tmpact << " although server/path was expected." << endl;
+			rmfile.close();
+			return 1;
+		}
+	} else {
+		cerr << "Remote modlist list parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			rmfile.close();
+			return 1;
+	}
+	} else if(action == "server") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Remote modlist list parse error: Found " << line[0] << " although string was expected." << endl;
+			rmfile.close();
+			return 1;
+		} else {
+			tmpmld.server = line;
+			action = "parse";
+		}
+	} else if(action == "path") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Remote modlist list parse error: Found " << line[0] << " although string was expected." << endl;
+			rmfile.close();
+			return 1;
+		} else {
+			tmpmld.path = line;
+			action = "parse";
+		}
+	} else {
+		cerr << "Remote modlist list parse error: The program should not reach this place!" << endl;
+		rmfile.close();
+		return 1;
+	}
+}
+}
+*pmodlists = tmpv;
 return 0;
 }
 
