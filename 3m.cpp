@@ -32,6 +32,7 @@ struct rmodinfo {
 string name;
 string description;
 int release;
+vector<string> deps;
 string repotype;
 string repoaddr;
 };
@@ -348,10 +349,10 @@ while(!modinfo.eof()) {
 		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
 		tmpact += line[i];
 		}
-		if(tmpact == "description" || tmpact == "release" || tmpact == "repotype" || tmpact == "repoaddr") {
+		if(tmpact == "description" || tmpact == "release" || tmpact == "deps" || tmpact == "repotype" || tmpact == "repoaddr") {
 		action = tmpact;	
 		} else {
-			cerr << "Modinfo parse error: Found " << tmpact << " although description/release/repotype/repoaddr was expected." << endl;
+			cerr << "Modinfo parse error: Found " << tmpact << " although description/release/deps/repotype/repoaddr was expected." << endl;
 			modinfo.close();
 			return 1;
 		}
@@ -377,6 +378,20 @@ while(!modinfo.eof()) {
 		} else {
 			tmp.release = atoi(line.c_str());
 			action = "parse";
+		}
+	} else if(action == "deps") {
+		if(line[0] == '{') {
+			cerr << "Modinfo parse error: Found " << line[0] << " although string or [ was expected." << endl;
+			modinfo.close();
+			return 1;
+		} else if(line[0] == '[') {
+			if(line[1] == 'd' && line[2] == 'e' && line[3] == 'p' && line[4] == 's' && line[5] == 'e' && line[6] == 'n' && line[7] == 'd' && line[8] == ']') {
+			action = "parse";	
+			} else {
+			cerr << "Modinfo parse error: Found " << line << " although string or [depsend] was expected." << endl;	
+			}
+		} else {
+		tmp.deps.push_back(line);	
 		}
 	} else if(action == "repotype") {
 		if(line[0] == '[' || line[0] == '{') {
