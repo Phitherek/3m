@@ -447,6 +447,7 @@ cout << "-v - Version: Print version" << endl;
 	} else if(argv[1][1] == 'v') {
 		cout << "v. 0.1-indev" << endl;
 	} else {
+cout << "3m - Minetest Mod Manager v. 0.1-indev (C) 2012 by Phitherek_" << endl;
 ps = parseconfig(&localrepo, &localml, &localri, config);
 if(ps == 1) {
 cerr << "Parse error! Exiting..." << endl;
@@ -458,6 +459,11 @@ cout << "DEBUG: localrepo: " << localrepo << endl;
 cout << "DEBUG: localml: " << localml << endl;
 cout << "DEBUG: localri: " << localri << endl;
 //---DEBUG END---
+if(argv[1][1] == 'S') {
+	
+} else {
+	cout << "No such action: " << argv[1] << endl << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;	
+}
 return EXIT_SUCCESS;
 }
 }
