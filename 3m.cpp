@@ -43,10 +43,11 @@ vector<rmodinfo> rmodinfos;
 
 string strgetline(string *str, int* erased) {
 string line = "";
-for(int i = 0; (*str)[i] != '\n'; i++) {
+int i;
+for(i = 0; (*str)[i] != '\n'; i++) {
 line += (*str)[i];
 }
-*str.erase(0, i);
+(*str).erase(0, i+1);
 *erased = i;
 return line;
 }
@@ -252,7 +253,6 @@ for(int i = 0; i < size; i++) {
 		action = "parse";
 		} else {
 			cerr << "Modlist parse error: Found " << line[0] << " although { was expected." << endl;
-			modlist.close();
 			return 1;
 		}
 	} else if(action == "parse") {
@@ -262,13 +262,11 @@ for(int i = 0; i < size; i++) {
 				tmpv.push_back(tmprmld);
 			} else {
 				cerr << "Modlist parse error: Data error." << endl;
-				modlist.close();
 				return 1;
 			}
 		action = "detect";
 		} else {
 			cerr << "Modlist parse error: Found " << line << " although {end} or action in [] was expected." << endl;
-			modlist.close();
 			return 1;
 		}
 	} else if(line[0] == '[') {
@@ -280,18 +278,15 @@ for(int i = 0; i < size; i++) {
 		action = tmpact;	
 		} else {
 			cerr << "Modlist parse error: Found " << tmpact << " although server/modinfo was expected." << endl;
-			modlist.close();
 			return 1;
 		}
 	} else {
 		cerr << "Modlist parse error: Found " << line << " although {end} or action in [] was expected." << endl;
-			modlist.close();
 			return 1;
 	}
 	} else if(action == "server") {
 		if(line[0] == '[' || line[0] == '{') {
 			cerr << "Modlist parse error: Found " << line[0] << " although string was expected." << endl;
-			modlist.close();
 			return 1;
 		} else {
 			tmprmld.server = line;
@@ -300,7 +295,6 @@ for(int i = 0; i < size; i++) {
 	} else if(action == "modinfo") {
 		if(line[0] == '[' || line[0] == '{') {
 			cerr << "Modlist parse error: Found " << line[0] << " although string was expected." << endl;
-			modlist.close();
 			return 1;
 		} else {
 			tmprmld.modinfo = line;
@@ -308,10 +302,8 @@ for(int i = 0; i < size; i++) {
 		}
 	} else {
 		cerr << "Modlist parse error: The program should not reach this place!" << endl;
-		modlist.close();
 		return 1;
 	}
-}
 }
 *rmodlist = tmpv;
 return 0;
@@ -335,7 +327,6 @@ for(int i = 0; i < size; i++) {
 		action = "parse";
 		} else {
 			cerr << "Modinfo parse error: Found " << line[0] << " although { was expected." << endl;
-			modinfo.close();
 			return 1;
 		}
 	} else if(action == "parse") {
@@ -344,7 +335,6 @@ for(int i = 0; i < size; i++) {
 		action = "detect";
 		} else {
 			cerr << "Modinfo parse error: Found " << line << " although {end} or action in [] was expected." << endl;
-			modinfo.close();
 			return 1;
 		}
 	} else if(line[0] == '[') {
@@ -356,18 +346,15 @@ for(int i = 0; i < size; i++) {
 		action = tmpact;	
 		} else {
 			cerr << "Modinfo parse error: Found " << tmpact << " although description/release/deps/repotype/repoaddr was expected." << endl;
-			modinfo.close();
 			return 1;
 		}
 	} else {
 		cerr << "Modinfo parse error: Found " << line << " although {end} or action in [] was expected." << endl;
-			modinfo.close();
 			return 1;
 	}
 	} else if(action == "description") {
 		if(line[0] == '[' || line[0] == '{') {
 			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
-			modinfo.close();
 			return 1;
 		} else {
 			tmp.description = line;
@@ -376,7 +363,6 @@ for(int i = 0; i < size; i++) {
 	} else if(action == "release") {
 		if(line[0] == '[' || line[0] == '{') {
 			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
-			modinfo.close();
 			return 1;
 		} else {
 			tmp.release = atoi(line.c_str());
@@ -385,7 +371,6 @@ for(int i = 0; i < size; i++) {
 	} else if(action == "deps") {
 		if(line[0] == '{') {
 			cerr << "Modinfo parse error: Found " << line[0] << " although string or [ was expected." << endl;
-			modinfo.close();
 			return 1;
 		} else if(line[0] == '[') {
 			if(line[1] == 'd' && line[2] == 'e' && line[3] == 'p' && line[4] == 's' && line[5] == 'e' && line[6] == 'n' && line[7] == 'd' && line[8] == ']') {
@@ -399,7 +384,6 @@ for(int i = 0; i < size; i++) {
 	} else if(action == "repotype") {
 		if(line[0] == '[' || line[0] == '{') {
 			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
-			modinfo.close();
 			return 1;
 		} else {
 			tmp.repotype = line;
@@ -408,7 +392,6 @@ for(int i = 0; i < size; i++) {
 	} else if(action == "repoaddr") {
 	if(line[0] == '[' || line[0] == '{') {
 			cerr << "Modinfo parse error: Found " << line[0] << " although string was expected." << endl;
-			modinfo.close();
 			return 1;
 		} else {
 			tmp.repoaddr = line;
@@ -416,16 +399,14 @@ for(int i = 0; i < size; i++) {
 		}
 	} else {
 		cerr << "Modinfo parse error: The program should not reach this place!" << endl;
-		modinfo.close();
 		return 1;
 	}
-}
 }
 *mis = tmp;
 return 0;
 }
 
-int getmodinfo(rmodlistdata mld, rmodinfo *rmi) {
+int getmodinfo(rmodinfo *rmi ,rmodlistdata mld) {
 int remote;
 int yes=1;
 int status;
@@ -433,12 +414,12 @@ int status;
 	char rcvbuf[1000000];
 	addrinfo hints;
 	addrinfo *servinfo, *p;
-	cout << "get_modinfo: Trying to get modinfo for: " << mld.name << endl;
-	cout << "get_modinfo: Connecting to: " << mld.server << endl;
+	cout << "getmodinfo: Trying to get modinfo for: " << mld.name << endl;
+	cout << "getmodinfo: Connecting to: " << mld.server << endl;
 	memset(&hints, 0, sizeof(hints)); // We do not want any trash here...
 	hints.ai_family = AF_UNSPEC; // Make it IPv4 or IPv6 - which one fits.
 	hints.ai_socktype = SOCK_STREAM; // HTTP works on TCP, right?
-	if((status = getaddrinfo(mld.server, "http", &hints, &servinfo)) != 0) { // Trying to get servinfo - server network address etc.
+	if((status = getaddrinfo(mld.server.c_str(), "http", &hints, &servinfo)) != 0) { // Trying to get servinfo - server network address etc.
 		cerr << "Failed to connect to the server: " << gai_strerror(status) << endl;
 		return 1; // 1 means GAI failed
 	}
@@ -468,6 +449,165 @@ int status;
 	string req = "";
 	stringstream sreq;
 	sreq << "GET " << mld.modinfo << " HTTP/1.0\n\n";
+	req = sreq.str();
+	status = send(remote, req.c_str(), req.length(), 0);
+	if(status == -1) {
+		cerr << "Could not send HTTP GET request: " << strerror(errno) << endl;
+		return 3; // 3 means send failed
+	}
+	cout << status << " bytes sent" << endl;
+	cout << "Receiving modinfo..." << endl;
+	status = recv(remote, &rcvbuf, 1000000, 0);
+	if(status == -1) {
+		cerr << "Could not receive modinfo: " << strerror(errno) << endl;
+		return 4; // 4 means recv failed
+	}
+	string protocol;
+	int iter;
+	for(int i=0; i<8;i++) {
+	protocol += rcvbuf[i];
+	iter = i;	
+	}
+	string response;
+	for(int i=9; rcvbuf[i] != '\n'; i++) {
+	response += rcvbuf[i];
+	iter = i;	
+	}
+	string timestamp;
+	iter += 7;
+	for(int i=iter+1; rcvbuf[i] != '\n'; i++) {
+	timestamp += rcvbuf[i];
+	iter = i;	
+	}
+	string server;
+	iter += 9;
+	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
+	server += rcvbuf[i];
+	iter = i;	
+	}
+	string addinfo;
+	for(int i = iter+1; rcvbuf[i+1] != 'C' || rcvbuf[i+2] != 'o' || rcvbuf[i+3] != 'n'; i++) {
+	addinfo += rcvbuf[i];
+	iter = i;
+	}
+	string cl;
+	if(rcvbuf[iter+5] == 't') {
+	iter += 16;
+	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
+	cl += rcvbuf[i];
+	iter = i;	
+	}
+	} else {
+	cl = "";	
+	}
+	string connection;
+	iter += 13;
+	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
+	connection += rcvbuf[i];
+	iter = i;	
+	}
+	string ct;
+	iter += 15;
+	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
+	ct += rcvbuf[i];
+	iter = i;	
+	}
+	string paddinfo;
+	if(rcvbuf[iter+1] != '\n' || rcvbuf[iter+2] != '\r' || rcvbuf[iter+3] != '\n') {
+	for(int i = iter+1; rcvbuf[i+1] != '\n' || rcvbuf[i+2] != '\r' || rcvbuf[i+3] != '\n';i++) {
+		paddinfo += rcvbuf[i];
+		iter = i;
+	}
+	} else {
+	paddinfo = "";	
+	}
+	string content;
+	iter += 3;
+	int recvcon=0;
+	for(int i = iter+1; rcvbuf[i] != '\000'; i++) {
+	content += rcvbuf[i];
+	iter = i;
+	recvcon++; 	
+	}
+	if(response[0] != '2' || response[1] != '0' || response[2] != '0' || response[4] != 'O' || response[5] != 'K') {
+		cerr << "HTTP Error! Response: " << response << endl;
+		return 5; // 5 means HTTP Error
+	}
+	if(cl != "") {
+	int icl;
+	icl = atoi(cl.c_str());
+	while(recvcon < icl) {
+		for(int i=0; i<1000000; i++) {
+		rcvbuf[i] = NULL;	
+		}
+	status = recv(remote, &rcvbuf, 1000000, 0);
+	if(status == -1) {
+		cerr << "Could not receive modinfo: " << strerror(errno) << endl;
+		return 4; // 4 means recv failed
+	}
+	cout << status << " bytes received" << endl;
+	for(int i = iter+1; rcvbuf[i] != '\000'; i++) {
+	content += rcvbuf[i];
+	iter = i;
+	recvcon++; 	
+	}
+	}
+	}
+	close(remote);
+	cout << "Received modinfo! Starting modinfo parser..." << endl;
+	rmodinfo tmp;
+	status = parsemodinfo(&tmp, content, recvcon);
+	if(status == 1) {
+	cout << "Modinfo parse error!" << endl;
+	return 6; // 6 means parse error	
+	}
+	*rmi = tmp;
+	return 0; // 0 means all OK
+}
+
+int getmodlist(modlist *ml, modlistdata mld) {
+int remote;
+int yes=1;
+int status;
+	char caddr[INET6_ADDRSTRLEN];
+	char rcvbuf[1000000];
+	addrinfo hints;
+	addrinfo *servinfo, *p;
+	cout << "getmodlist: Trying to get modlist: " << mld.name << endl;
+	cout << "getmodlist: Connecting to: " << mld.server << endl;
+	memset(&hints, 0, sizeof(hints)); // We do not want any trash here...
+	hints.ai_family = AF_UNSPEC; // Make it IPv4 or IPv6 - which one fits.
+	hints.ai_socktype = SOCK_STREAM; // HTTP works on TCP, right?
+	if((status = getaddrinfo(mld.server.c_str(), "http", &hints, &servinfo)) != 0) { // Trying to get servinfo - server network address etc.
+		cerr << "Failed to connect to the server: " << gai_strerror(status) << endl;
+		return 1; // 1 means GAI failed
+	}
+	for(p = servinfo; p != NULL; p = p->ai_next) { // For every GAI result try to create a socket, set socket options and, finally, connect
+		remote = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+		if(remote == -1) {
+			cerr << "Failed to create socket: " << strerror(errno) << endl;
+		}
+		if((setsockopt(remote, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)) {
+			cerr << "Failed to set socket options: " << strerror(errno) << endl;
+		}
+		status = connect(remote, servinfo->ai_addr, servinfo->ai_addrlen);
+		if(status == -1) {
+			cerr << "Could not connect to this address: " << strerror(errno) << endl;
+			continue;
+		}
+		break;
+	}
+	if(p == NULL) {
+		cerr << "Could not connect to the server: " << strerror(errno) << endl;
+		return 2; // 2 means connecting failed
+	}
+	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), caddr, sizeof(caddr));
+	freeaddrinfo(servinfo);
+	cout << "Connection to " << caddr << " has been successfully established!" << endl;
+	cout << "Sending HTTP GET request..." << endl;
+	string req = "";
+	stringstream sreq;
+	sreq << "GET " << mld.path << " HTTP/1.0\n\n";
 	req = sreq.str();
 	status = send(remote, req.c_str(), req.length(), 0);
 	if(status == -1) {
@@ -575,168 +715,8 @@ int status;
 	close(remote);
 	cout << "Received modlist! Starting modlist parser..." << endl;
 	modlist tmp;
-	
-	status = parsemodinfo(&tmp, content, recvcon);
-	if(status == 1) {
-	cout << "Modlist parse error!" << endl;
-	return 6; // 6 means parse error	
-	}
-	*rmi = tmp;
-	return 0; // 0 means all OK
-}
-
-int getmodlist(modlist *ml, modlistdata mld) {
-int remote;
-int yes=1;
-int status;
-	char caddr[INET6_ADDRSTRLEN];
-	char rcvbuf[1000000];
-	addrinfo hints;
-	addrinfo *servinfo, *p;
-	cout << "get_modinfo: Trying to get modlist: " << mld.name << endl;
-	cout << "get_modinfo: Connecting to: " << mld.server << endl;
-	memset(&hints, 0, sizeof(hints)); // We do not want any trash here...
-	hints.ai_family = AF_UNSPEC; // Make it IPv4 or IPv6 - which one fits.
-	hints.ai_socktype = SOCK_STREAM; // HTTP works on TCP, right?
-	if((status = getaddrinfo(mld.server, "http", &hints, &servinfo)) != 0) { // Trying to get servinfo - server network address etc.
-		cerr << "Failed to connect to the server: " << gai_strerror(status) << endl;
-		return 1; // 1 means GAI failed
-	}
-	for(p = servinfo; p != NULL; p = p->ai_next) { // For every GAI result try to create a socket, set socket options and, finally, connect
-		remote = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-		if(remote == -1) {
-			cerr << "Failed to create socket: " << strerror(errno) << endl;
-		}
-		if((setsockopt(remote, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)) {
-			cerr << "Failed to set socket options: " << strerror(errno) << endl;
-		}
-		status = connect(remote, servinfo->ai_addr, servinfo->ai_addrlen);
-		if(status == -1) {
-			cerr << "Could not connect to this address: " << strerror(errno) << endl;
-			continue;
-		}
-		break;
-	}
-	if(p == NULL) {
-		cerr << "Could not connect to the server: " << strerror(errno) << endl;
-		return 2; // 2 means connecting failed
-	}
-	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), caddr, sizeof(caddr));
-	freeaddrinfo(servinfo);
-	cout << "Connection to " << caddr << " has been successfully established!" << endl;
-	cout << "Sending HTTP GET request..." << endl;
-	string req = "";
-	stringstream sreq;
-	sreq << "GET " << mld.path << " HTTP/1.0\n\n";
-	req = sreq.str();
-	status = send(remote, req.c_str(), req.length(), 0);
-	if(status == -1) {
-		cerr << "Could not send HTTP GET request: " << strerror(errno) << endl;
-		return 3; // 3 means send failed
-	}
-	cout << status << " bytes sent" << endl;
-	cout << "Receiving modinfo..." << endl;
-	status = recv(remote, &rcvbuf, 1000000, 0);
-	if(status == -1) {
-		cerr << "Could not receive modinfo: " << strerror(errno) << endl;
-		return 4; // 4 means recv failed
-	}
-	string protocol;
-	int iter;
-	for(int i=0; i<8;i++) {
-	protocol += rcvbuf[i];
-	iter = i;	
-	}
-	string response;
-	for(int i=9; rcvbuf[i] != '\n'; i++) {
-	response += rcvbuf[i];
-	iter = i;	
-	}
-	string timestamp;
-	iter += 7;
-	for(int i=iter+1; rcvbuf[i] != '\n'; i++) {
-	timestamp += rcvbuf[i];
-	iter = i;	
-	}
-	string server;
-	iter += 9;
-	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
-	server += rcvbuf[i];
-	iter = i;	
-	}
-	string addinfo;
-	for(int i = iter+1; rcvbuf[i+1] != 'C' || rcvbuf[i+2] != 'o' || rcvbuf[i+3] != 'n'; i++) {
-	addinfo += rcvbuf[i];
-	iter = i;
-	}
-	string cl;
-	if(rcvbuf[iter+5] == 't') {
-	iter += 16;
-	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
-	cl += rcvbuf[i];
-	iter = i;	
-	}
-	} else {
-	cl = "";	
-	}
-	string connection;
-	iter += 13;
-	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
-	connection += rcvbuf[i];
-	iter = i;	
-	}
-	string ct;
-	iter += 15;
-	for(int i = iter+1; rcvbuf[i] != '\n'; i++) {
-	ct += rcvbuf[i];
-	iter = i;	
-	}
-	string paddinfo;
-	if(rcvbuf[iter+1] != '\n' || rcvbuf[iter+2] != '\r' || rcvbuf[iter+3] != '\n') {
-	for(int i = iter+1; rcvbuf[i+1] != '\n' || rcvbuf[i+2] != '\r' || rcvbuf[i+3] != '\n';i++) {
-		paddinfo += rcvbuf[i];
-		iter = i;
-	}
-	} else {
-	paddinfo = "";	
-	}
-	string content;
-	iter += 3;
-	int recvcon=0;
-	for(int i = iter+1; rcvbuf[i] != '\000'; i++) {
-	content += rcvbuf[i];
-	iter = i;
-	recvcon++; 	
-	}
-	if(response[0] != '2' || response[1] != '0' || response[2] != '0' || response[4] != 'O' || response[5] != 'K') {
-		cerr << "HTTP Error! Response: " << response << endl;
-		return 5; // 5 means HTTP Error
-	}
-	if(cl != "") {
-	int icl;
-	icl = atoi(cl.c_str());
-	while(recvcon < icl) {
-		for(int i=0; i<1000000; i++) {
-		rcvbuf[i] = NULL;	
-		}
-	status = recv(remote, &rcvbuf, 1000000, 0);
-	if(status == -1) {
-		cerr << "Could not receive modinfo: " << strerror(errno) << endl;
-		return 4; // 4 means recv failed
-	}
-	cout << status << " bytes received" << endl;
-	for(int i = iter+1; rcvbuf[i] != '\000'; i++) {
-	content += rcvbuf[i];
-	iter = i;
-	recvcon++; 	
-	}
-	}
-	}
-	close(remote);
-	cout << "Received modinfo! Starting modinfo parser..." << endl;
-	modlist tmp;
 	vector<rmodlistdata> vtmp;
-	status = parsemodlist(&vtmp, content, recvcon);
+	status = parsermodlist(&vtmp, content, recvcon);
 	if(status == 1) {
 	cout << "Modlist parse error!" << endl;
 	return 6; // 6 means parse error	
@@ -744,7 +724,7 @@ int status;
 	tmp.name = mld.name;
 	for(int i = 0; i < vtmp.size(); i++) {
 	rmodinfo rmi;
-	status = getmodinfo(vtmp[i], &rmi);
+	status = getmodinfo(&rmi, vtmp[i]);
 	if(status != 0) {
 		cerr << "Getmodinfo error: " << status << endl;
 	} else {
@@ -756,7 +736,7 @@ int status;
 }
 
 int writelocalmodlist(vector<modlist> mlv, string lmlfn) {
-	ifstream lml(lmlfn.c_str());
+	ofstream lml(lmlfn.c_str());
 	if(!lml) {
 		cout << "Error: Cannot open local modlist file for writing!" << endl;
 		return 1; // 1 means file write error
