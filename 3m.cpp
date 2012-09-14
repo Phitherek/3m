@@ -430,13 +430,13 @@ sconfig << homedir << "/.3m/config";
 config = sconfig.str();
 int ps;
 string localrepo, localml, localri;
-if(argc < 2) {
+if(argc < 2 || argv[1][0] != '-') {
 cout << "3m - Minetest Mod Manager v. 0.1-indev (C) 2012 by Phitherek_" << endl;
-cout << "Usage: " << argv[0] << "[-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;
+cout << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;
 } else {
-	if(argv[1] == "-h") {
+	if(argv[1][1] == 'h') {
 	cout << "3m - Minetest Mod Manager v. 0.1-indev (C) 2012 by Phitherek_" << endl;
-cout << "Usage: " << argv[0] << "[-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;
+cout << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;
 cout << endl;
 cout << "-S - Sync: gather information from remote modinfo files and update local modlist" << endl;
 cout << "-I - Install: download and install mod(s)" << endl;
@@ -444,8 +444,8 @@ cout << "-R - Remove: remove installed mod(s)" << endl;
 cout << "-Q - Query: Query local modlist for a modname(s)" << endl;
 cout << "-h - Help: This message" << endl;
 cout << "-v - Version: Print version" << endl;
-	} else if(argv[1] == "-v") {
-		cout << "3m - Minetest Mod Manager v. 0.1-indev (C) 2012 by Phitherek_" << endl;
+	} else if(argv[1][1] == 'v') {
+		cout << "v. 0.1-indev" << endl;
 	} else {
 ps = parseconfig(&localrepo, &localml, &localri, config);
 if(ps == 1) {
