@@ -448,7 +448,7 @@ int status;
 	cout << "Sending HTTP GET request..." << endl;
 	string req = "";
 	stringstream sreq;
-	sreq << "GET " << mld.modinfo << " HTTP/1.0\n\n";
+	sreq << "GET " << mld.modinfo << " HTTP/1.0\n" << "Host: " << mld.server << endl << endl;
 	req = sreq.str();
 	status = send(remote, req.c_str(), req.length(), 0);
 	if(status == -1) {
@@ -607,7 +607,7 @@ int status;
 	cout << "Sending HTTP GET request..." << endl;
 	string req = "";
 	stringstream sreq;
-	sreq << "GET " << mld.path << " HTTP/1.0\n\n";
+	sreq << "GET " << mld.path << " HTTP/1.0\n" << "Host: " << mld.server << endl << endl;
 	req = sreq.str();
 	status = send(remote, req.c_str(), req.length(), 0);
 	if(status == -1) {
