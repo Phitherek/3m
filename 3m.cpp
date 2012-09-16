@@ -243,6 +243,7 @@ for(int i = 0; i < size; i++) {
 	int erased;
 	line = strgetline(&modlist, &erased);
 	size -= erased;
+	if(line[0] != NULL && line[0] != ' ' && line[0] != '\n') {
 	if(action == "detect") {
 		if(line[0] == '{') {
 		string name = "";
@@ -305,6 +306,7 @@ for(int i = 0; i < size; i++) {
 		return 1;
 	}
 }
+}
 *rmodlist = tmpv;
 return 0;
 }
@@ -317,6 +319,7 @@ for(int i = 0; i < size; i++) {
 	int erased;
 	line = strgetline(&modinfo, &erased);
 	size -= erased;
+	if(line[0] != NULL && line[0] != ' ' && line[0] != '\n') {
 	if(action == "detect") {
 		if(line[0] == '{') {
 		string name = "";
@@ -401,6 +404,7 @@ for(int i = 0; i < size; i++) {
 		cerr << "Modinfo parse error: The program should not reach this place!" << endl;
 		return 1;
 	}
+}
 }
 *mis = tmp;
 return 0;
