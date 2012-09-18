@@ -1109,12 +1109,12 @@ cout << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ...
 } else {
 	if(argv[1][1] == 'h') {
 	cout << "3m - Minetest Mod Manager v. 0.1-indev (C) 2012 by Phitherek_" << endl;
-cout << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;
+cout << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] arg1 arg2 ..." << endl;
 cout << endl;
 cout << "-S - Sync: gather information from remote modinfo files and update local modlist" << endl;
 cout << "-I - Install: download and install mod(s)" << endl;
 cout << "-R - Remove: remove installed mod(s)" << endl;
-cout << "-Q - Query: Query local modlist for a modname(s)" << endl;
+cout << "-Q - Query: Query local modlist for a string in modname or description. It takes only one argument. The --local option displays a list of installed mods" << endl;
 cout << "-h - Help: This message" << endl;
 cout << "-v - Version: Print version" << endl;
 	} else if(argv[1][1] == 'v') {
