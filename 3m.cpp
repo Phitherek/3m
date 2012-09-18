@@ -27,6 +27,22 @@ string server;
 string modinfo;
 };
 
+struct lmodlistdata {
+string name;
+string rmodlist;
+string description;
+int release;
+vector<string> deps;
+string repotype;
+string repoaddr;
+};
+
+struct repoinfodata {
+string name;
+int release;
+string path;
+};
+
 struct rmodinfo {
 string name;
 string description;
@@ -63,6 +79,24 @@ rmi.deps.clear();
 rmi.repotype = "";
 rmi.repoaddr = "";
 return rmi;
+}
+
+lmodlistdata lmldclear(lmodlistdata lmld) {
+lmld.name = "";
+lmld.rmodlist = "";
+lmld.description = "";
+lmld.release = NULL;
+lmld.deps.clear();
+lmld.repotype = "";
+lmld.repoaddr = "";
+return lmld;
+}
+
+repoinfodata ridclear(repoinfodata rid) {
+rid.name = "";
+rid.release = NULL;
+rid.path = "";
+return rid;
 }
 
 string strgetline(string *str, int* erased) {
@@ -173,7 +207,7 @@ return 0;
 
 int parsemodlists(vector<modlistdata> *pmodlists, string rmfn) {
 ifstream rmfile(rmfn.c_str());
-vector<modlistdata> tmpv = *pmodlists;
+vector<modlistdata> tmpv;
 if(!rmfile) {
 	cerr << "Remote modlist list parse error: Cannot open remote modlist file for reading" << endl;
 }
@@ -256,6 +290,234 @@ while(!rmfile.eof()) {
 }
 }
 *pmodlists = tmpv;
+return 0;
+}
+
+int parselmodlist(vector<lmodlistdata> *lmodlist, string lmfn) {
+	ifstream lmfile(lmfn.c_str());
+	vector<lmodlistdata> tmpv;	
+	if(!lmfile) {
+		cerr << "Local modlist parse error: Could not open local modlist file for reading!" << endl;
+		return 1;
+	}
+	string action = "detect";
+lmodlistdata tmplmld;
+tmplmld = lmldclear(tmplmld);
+while(!lmfile.eof()) {
+	string line = "";
+	char c;
+	do {
+	lmfile.get(c);
+	if(c != '\n');
+	line += c;
+	} while(c != '\n');
+	if(lmfile) {
+	if(action == "detect") {
+		if(line[0] == '{') {
+		string name = "";
+		for(int i = 1; line[i] != '}' && i < line.length(); i++) {
+			name += line[i];
+		}
+		tmplmld.name = name;
+		action = "parse";
+		} else {
+			cerr << "Local modlist parse error: Found " << line[0] << " although { was expected." << endl;
+			lmfile.close();
+			return 1;
+		}
+	} else if(action == "parse") {
+	if(line[0] == '{') {
+		if(line[1] == 'e' && line[2] == 'n' && line[3] == 'd' && line[4] == '}') {
+			if(tmplmld.name != "" && tmplmld.rmodlist != "" && tmplmld.description != "" && !tmplmld.deps.empty() && tmplmld.repotype != "" && tmplmld.repoaddr != "") {
+				tmpv.push_back(tmplmld);
+				tmplmld = lmldclear(tmplmld);
+				action = "detect";
+			} else {
+				cerr << "Local modlist parse error: Data error." << endl;
+				lmfile.close();
+				return 1;
+			}
+		action = "detect";
+		} else {
+			cerr << "Local modlist parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			lmfile.close();
+			return 1;
+		}
+	} else if(line[0] == '[') {
+		string tmpact = "";
+		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		tmpact += line[i];
+		}
+		if(tmpact == "rmodlist" || tmpact == "description" || tmpact == "release" || tmpact == "deps" || tmpact == "repotype" || tmpact == "repoaddr") {
+		action = tmpact;	
+		} else {
+			cerr << "Local modlist parse error: Found " << tmpact << " although rmodlist/description/release/deps/repotype/repoaddr was expected." << endl;
+			lmfile.close();
+			return 1;
+		}
+	} else {
+		cerr << "Local modlist parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			lmfile.close();
+			return 1;
+	}
+	} else if(action == "rmodlist") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			lmfile.close();
+			return 1;
+		} else {
+			tmplmld.rmodlist = line;
+			action = "parse";
+		}
+	} else if(action == "description") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			lmfile.close();
+			return 1;
+		} else {
+			tmplmld.description = line;
+			action = "parse";
+		}
+	} else if(action == "release") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			lmfile.close();
+			return 1;
+		} else {
+			tmplmld.release = atoi(line.c_str());
+			action = "parse";
+		}
+	} else if(action == "deps") {
+		if(line[0] == '{') {
+			cerr << "Local modlist parse error: Found " << line[0] << " although string or [ was expected." << endl;
+			lmfile.close();
+			return 1;
+		} else if(line[0] == '[') {
+			if(line[1] == 'd' && line[2] == 'e' && line[3] == 'p' && line[4] == 's' && line[5] == 'e' && line[6] == 'n' && line[7] == 'd' && line[8] == ']') {
+				if(tmplmld.deps.empty()) {
+				tmplmld.deps.push_back("none");	
+				}
+			action = "parse";	
+			} else {
+			cerr << "Local modlist parse error: Found " << line << " although string or [depsend] was expected." << endl;
+			return 1;
+			}
+		} else {
+		tmplmld.deps.push_back(line);	
+		}
+	} else if(action == "repotype") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			lmfile.close();
+			return 1;
+		} else {
+			tmplmld.repotype = line;
+			action = "parse";
+		}
+	} else if(action == "repoaddr") {
+	if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local modlist parse error: Found " << line[0] << " although string was expected." << endl;
+			lmfile.close();
+			return 1;
+		} else {
+			tmplmld.repoaddr = line;
+			action = "parse";
+		}
+	} else {
+		cerr << "Local modlist parse error: The program should not reach this place!" << endl;
+		lmfile.close();
+		return 1;
+	}
+}
+}
+*lmodlist = tmpv;
+lmfile.close();
+return 0;
+}
+
+int parserepoinfo(vector<repoinfodata> *repoinfo, string rifn) {
+ifstream rifile(rifn.c_str());
+vector<repoinfodata> tmpv = *repoinfo;
+if(!rifile) {
+	cerr << "Local repoinfo parse error: Cannot open local repoinfo file for reading" << endl;
+	return 1;
+}
+string action = "detect";
+repoinfodata tmprid;
+tmprid = ridclear(tmprid);
+while(!rifile.eof()) {
+	string line;
+	rifile >> line;
+	if(rifile) {
+	if(action == "detect") {
+		if(line[0] == '{') {
+		string name = "";
+		for(int i = 1; line[i] != '}' && i < line.length(); i++) {
+			name += line[i];
+		}
+		tmprid.name = name;
+		action = "parse";
+		} else {
+			cerr << "Local repoinfo parse error: Found " << line[0] << " although { was expected." << endl;
+			rifile.close();
+			return 1;
+		}
+	} else if(action == "parse") {
+	if(line[0] == '{') {
+		if(line[1] == 'e' && line[2] == 'n' && line[3] == 'd' && line[4] == '}') {
+			if(tmprid.name != "" && tmprid.path != "") {
+				tmpv.push_back(tmprid);
+			} else {
+				cerr << "Local repoinfo parse error: Data error." << endl;
+				rifile.close();
+				return 1;
+			}
+		action = "detect";
+		} else {
+			cerr << "Local repoinfo parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			rifile.close();
+			return 1;
+		}
+	} else if(line[0] == '[') {
+		string tmpact = "";
+		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		tmpact += line[i];
+		}
+		if(tmpact == "release" || tmpact == "path") {
+		action = tmpact;	
+		} else {
+			cerr << "Local repoinfo parse error: Found " << tmpact << " although release/path was expected." << endl;
+			rifile.close();
+			return 1;
+		}
+	} else {
+		cerr << "Local repoinfo parse error: Found " << line << " although {end} or action in [] was expected." << endl;
+			rifile.close();
+			return 1;
+	}
+	} else if(action == "release") {
+		if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local repoinfo parse error: Found " << line[0] << " although string was expected." << endl;
+			return 1;
+		} else {
+			tmprid.release = atoi(line.c_str());
+			action = "parse";
+		}
+	} else if(action == "path") {
+	if(line[0] == '[' || line[0] == '{') {
+			cerr << "Local repoinfo parse error: Found " << line[0] << " although string was expected." << endl;
+			return 1;
+		} else {
+			tmprid.path = line;
+			action = "parse";
+		}
+	} else {
+		cerr << "Local repoinfo parse error: The program should not reach this place!" << endl;
+		return 1;
+	}
+}
+}
+*repoinfo = tmpv;
 return 0;
 }
 
@@ -411,6 +673,9 @@ for(int i = 0; i < size; i++) {
 			return 1;
 		} else if(line[0] == '[') {
 			if(line[1] == 'd' && line[2] == 'e' && line[3] == 'p' && line[4] == 's' && line[5] == 'e' && line[6] == 'n' && line[7] == 'd' && line[8] == ']') {
+				if(tmp.deps.empty()) {
+				tmp.deps.push_back("none");	
+				}
 			action = "parse";	
 			} else {
 			cerr << "Modinfo parse error: Found " << line << " although string or [depsend] was expected." << endl;
@@ -895,6 +1160,64 @@ if(argv[1][1] == 'S') {
 	return EXIT_FAILURE;	
 	}
 	cout << "Sync finished successfully!" << endl;
+} else if(argv[1][1] == 'Q') {
+	vector<lmodlistdata> lmodlist;
+	vector<repoinfodata> repoinfo;
+	int lmpr;
+	int ripr;
+	lmpr = parselmodlist(&lmodlist, localml);
+	if(lmpr == 1) {
+	cerr << "Local modlist parse error! Aborting..." << endl;
+	return EXIT_FAILURE;	
+	}
+	ripr = parserepoinfo(&repoinfo, localri);
+	if(ripr == 1) {
+	cout << "Local repoinfo parse error. This might mean no mod has been installed by 3m yet. Continuing..." << endl << endl;	
+	}
+	if(argc == 2) {
+		for(int i = 0; i < lmodlist.size(); i++) {
+			repoinfodata ritmp;
+			ritmp = ridclear(ritmp);
+			if(ripr != 0) {
+				for(int j = 0; j < repoinfo.size(); j++) {
+					if(strip_endl(repoinfo[j].name) == strip_endl(lmodlist[i].name)) {
+					ritmp = repoinfo[j];
+					break;
+					}
+				}
+				cout << strip_endl(lmodlist[i].rmodlist) << "/" << strip_endl(lmodlist[i].name) << " (release: " << lmodlist[i].release << ")";
+				if(ritmp.name != "") {
+					cout << " [installed: release " << ritmp.release;
+					if(ritmp.release < lmodlist[i].release) {
+					cout << " (Out of date!)";
+					}
+					cout << "]";
+				}
+				cout << endl << strip_endl(lmodlist[i].description) << endl;
+				if(strip_endl(lmodlist[i].deps[0]) != "none") {
+					cout << "Depends on: ";
+					for(int j = 0; j < lmodlist[i].deps.size(); j++) {
+					cout << strip_endl(lmodlist[i].deps[j]) << " ";	
+					}
+					cout << endl;
+				}
+				cout << endl;
+			} else {
+				cout << strip_endl(lmodlist[i].rmodlist) << "/" << strip_endl(lmodlist[i].name) << " (release: " << lmodlist[i].release << ")" << endl;
+				cout << strip_endl(lmodlist[i].description) << endl;
+				if(strip_endl(lmodlist[i].deps[0]) != "none") {
+					cout << "Depends on: ";
+					for(int j = 0; j < lmodlist[i].deps.size(); j++) {
+					cout << strip_endl(lmodlist[i].deps[j]) << " ";
+					}
+					cout << endl;
+				}
+				cout << endl;
+			}
+		}
+	} else {
+	cout << "Not implemented yet..." << endl;	
+	}
 } else {
 	cout << "No such action: " << argv[1] << endl << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;	
 }
