@@ -1178,7 +1178,7 @@ if(argv[1][1] == 'S') {
 		for(int i = 0; i < lmodlist.size(); i++) {
 			repoinfodata ritmp;
 			ritmp = ridclear(ritmp);
-			if(ripr != 0) {
+			if(ripr == 0) {
 				for(int j = 0; j < repoinfo.size(); j++) {
 					if(strip_endl(repoinfo[j].name) == strip_endl(lmodlist[i].name)) {
 					ritmp = repoinfo[j];
@@ -1216,7 +1216,59 @@ if(argv[1][1] == 'S') {
 			}
 		}
 	} else {
-	cout << "Not implemented yet..." << endl;	
+		if(argc > 3) {
+		cout << "Too many arguments! Taking only 3..." << endl;	
+		}
+		if(argv[2][0] == '-' && argv[2][1] == '-' && argv[2][2] == 'l' && argv[2][3] == 'o' && argv[2][4] == 'c' && argv[2][5] == 'a' && argv[2][6] == 'l') {
+			if(ripr == 0) {
+			for(int i = 0; i < repoinfo.size(); i++) {
+				cout << "localrepo/" << repoinfo[i].name << " (release: " << repoinfo[i].release << ")" << endl << "Installed at: " << repoinfo[i].path << endl << endl;
+		}
+	}
+		} else {
+			for(int i = 0; i < lmodlist.size(); i++) {
+				if(lmodlist[i].name.find(argv[2]) != -1 || lmodlist[i].description.find(argv[2]) != -1) {
+			repoinfodata ritmp;
+			ritmp = ridclear(ritmp);
+			if(ripr == 0) {
+				for(int j = 0; j < repoinfo.size(); j++) {
+					if(strip_endl(repoinfo[j].name) == strip_endl(lmodlist[i].name)) {
+					ritmp = repoinfo[j];
+					break;
+					}
+				}
+				cout << strip_endl(lmodlist[i].rmodlist) << "/" << strip_endl(lmodlist[i].name) << " (release: " << lmodlist[i].release << ")";
+				if(ritmp.name != "") {
+					cout << " [installed: release " << ritmp.release;
+					if(ritmp.release < lmodlist[i].release) {
+					cout << " (Out of date!)";
+					}
+					cout << "]";
+				}
+				cout << endl << strip_endl(lmodlist[i].description) << endl;
+				if(strip_endl(lmodlist[i].deps[0]) != "none") {
+					cout << "Depends on: ";
+					for(int j = 0; j < lmodlist[i].deps.size(); j++) {
+					cout << strip_endl(lmodlist[i].deps[j]) << " ";	
+					}
+					cout << endl;
+				}
+				cout << endl;
+			} else {
+				cout << strip_endl(lmodlist[i].rmodlist) << "/" << strip_endl(lmodlist[i].name) << " (release: " << lmodlist[i].release << ")" << endl;
+				cout << strip_endl(lmodlist[i].description) << endl;
+				if(strip_endl(lmodlist[i].deps[0]) != "none") {
+					cout << "Depends on: ";
+					for(int j = 0; j < lmodlist[i].deps.size(); j++) {
+					cout << strip_endl(lmodlist[i].deps[j]) << " ";
+					}
+					cout << endl;
+				}
+				cout << endl;
+			}
+		}
+		}
+		}
 	}
 } else {
 	cout << "No such action: " << argv[1] << endl << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;	
