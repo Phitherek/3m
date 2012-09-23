@@ -57,6 +57,13 @@ string name;
 vector<rmodinfo> rmodinfos;
 };
 
+struct actlist {
+string name;
+string rmodlist;
+int lmidx;
+int installed;
+};
+
 modlistdata mldclear(modlistdata mld) {
 mld.name = "";
 mld.server = "";
@@ -97,6 +104,14 @@ rid.name = "";
 rid.release = NULL;
 rid.path = "";
 return rid;
+}
+
+actlist alclear(actlist al) {
+al.name = "";
+al.rmodlist = "";
+al.lmidx = -1;
+al.installed = 0;
+return al;
 }
 
 string strgetline(string *str, int* erased) {
@@ -1093,6 +1108,20 @@ int writelocalmodlist(vector<modlist> mlv, string lmlfn) {
 	return 0; // 0 means all OK.
 }
 
+void modarg_parse(string *modname, string *modlist, string arg) {
+*modname = "";
+*modlist = "";
+string tmp;
+for(int i = 0; i < arg.length(); i++) {
+	if(arg[i] == "/") {
+	*modlist = tmp;
+	tmp = "";	
+	}
+}
+*modname = tmp;
+return;
+}
+
 int main(int argc, char **argv) {
 homedir = getenv("HOME");	
 string config, modlistsfn;
@@ -1129,9 +1158,9 @@ return EXIT_FAILURE;
 }
 cout << "Config parsed successfully!" << endl;
 //---DEBUG START---
-cout << "DEBUG: localrepo: " << localrepo << endl;
-cout << "DEBUG: localml: " << localml << endl;
-cout << "DEBUG: localri: " << localri << endl;
+//cout << "DEBUG: localrepo: " << localrepo << endl;
+//cout << "DEBUG: localml: " << localml << endl;
+//cout << "DEBUG: localri: " << localri << endl;
 //---DEBUG END---
 if(argv[1][1] == 'S') {
 	cout << "Syncing local modlist with information from remote modlists and modinfos..." << endl;
@@ -1168,7 +1197,7 @@ if(argv[1][1] == 'S') {
 	int ripr;
 	lmpr = parselmodlist(&lmodlist, localml);
 	if(lmpr == 1) {
-	cerr << "Local modlist parse error! Aborting..." << endl;
+	cerr << "Local modlist parse error (did you remember to use the -S (Sync) option first?)! Aborting..." << endl;
 	return EXIT_FAILURE;	
 	}
 	ripr = parserepoinfo(&repoinfo, localri);
@@ -1271,8 +1300,277 @@ if(argv[1][1] == 'S') {
 		}
 		}
 	}
+} else if(argv[1][1] == "-I") {
+	vector<lmodlistdata> lmodlist;
+	vector<repoinfodata> repoinfo;
+	int lmpr;
+	int ripr;
+	lmpr = parselmodlist(&lmodlist, localml);
+	if(lmpr == 1) {
+	cerr << "Local modlist parse error (did you remember to use the -S (Sync) option first?)! Aborting..." << endl;
+	return EXIT_FAILURE;	
+	}
+	ripr = parserepoinfo(&repoinfo, localri);
+	if(ripr == 1) {
+	cout << "Local repoinfo parse error. This might mean no mod has been installed by 3m yet. Continuing..." << endl << endl;	
+	}
+	if(argv < 3) {
+	cerr << "You must enter at least one mod name! Exiting..." << endl;
+	return EXIT_FAILURE;	
+	} else {
+		vector<actionlist> actionv;
+		cout << "Checking mod existence in lmodlist and repoinfo..." << endl;
+		for(int i = 2; i < argc; i++) {
+			actionlist tmpal;
+			tmpal = alclear(tmpal);
+			string modname, rmodlist;
+			modarg_parse(&modname, &rmodlist, argv[i]);
+			int lmodlistidx = -1;
+			for(int j = 0; j < lmodlist.size(); j++) {
+				if(rmodlist == "") {
+				if(strip_endl(lmodlist[j].name) == modname) {
+				lmodlistidx = j;
+				break;
+				}
+				} else {
+					if(strip_endl(lmodlist[j].name) == modname && strip_endl(lmodlist[j].rmodlist) == rmodlist) {
+					lmodlistidx = j;
+					break;
+					}
+				}
+			}
+			if(inmodlist == -1) {
+			cerr << "Mod " << argv[i] << " not found in local modlist (-S (Sync) action may resolve this)!" << endl;
+			} else {
+			tmpal.name = modname;
+			tmpal.rmodlist = rmodlist;
+			tmpal.lmidx = lmodlistidx;
+	if(ripr == 0) {
+	for(int j = 0; j < repoinfo.size(); j++) {
+		if(strip_endl(repoinfo[j].name) == modname) {
+		cout << "Warning! " << argv[i] << " already installed, reinstalling..." << endl;
+		tmpal.installed = 1;
+		break;
+		}
+	}
+	}
+		}
+		cout << "Checking dependencies for " << argv[i] << endl;
+		int depsok = 1;
+		for(int j = 0; j < lmodlist[lmodlistidx].deps.size(); j++) {
+			int deplmodlistidx = -1;
+			for(int k = 0; k < actionv.size(); k++) {
+				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(actionv[k].name)) {
+					cout << "Already installing: " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " - ignoring..." << endl;
+					depignore = 1;
+					break;
+				}
+			}
+				if(depignore == 0 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
+			for(int k = 0; k < lmodlist.size(); k++) {
+				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(lmodlist[k].name)) {
+				deplmodlistidx = k;
+				break;
+				}
+			}
+		if(deplmodlistidx == -1 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
+		cerr << "Could not satisfy dependencies for " << argv[i] << endl << "(-S (Sync) action may resolve this)!" << endl;
+		depsok = 0;
+		break;
+		}
+			}
+				}
+	if(depsok == 1) {
+		for(int j = 0; j < lmodlist[lmodlistidx].deps.size(); j++) {
+		actionlist depal;
+			depal = alclear(depal);
+			int depignore = 0;
+			for(int k = 0; k < actionv.size(); k++) {
+				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(actionv[k].name)) {
+					cout << "Already installing: " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " - ignoring..." << endl;
+					depignore = 1;
+					break;
+				}	
+	}
+	if(depignore == 0 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
+		depal.name = lmodlist[lmodlistidx].deps[j];
+		for(int k = 0; k < repoinfo.size(); k++) {
+		if(strip_endl(repoinfo[k].name) == strip_endl(lmodlist[lmodlistidx].deps[j]) {
+		cout << strip_endl(lmodlist[lmodlistidx].deps[k]) << " already installed, not installing..." << endl;
+		depal.installed = 1;
+		break;
+		}
+	}
+	if(depal.installed == 0) {
+		cout << "Adding dependency " << strip_endl(lmodlis[lmodlistidx].deps[j]) << " for installation..." << endl;
+		depal.rmodlist = "";
+		actionv.push_back(depal);
+	}
+	}
+		}
+		actionv.push_back(tmpal);
+	}
+		}
+		for(int i = 0; i < actionv.size(); i++) {
+			if(actionv[i].lmidx == -1) {
+				if(actionv[i].rmodlist == "") {
+				for(int j = 0; j < lmodlist.size(); j++) {
+				if(strip_endl(lmodlist[j].name) == strip_endl(actionv[i].name)) {
+				actionv[i].lmidx = j;
+				actionv[i].rmodlist = lmodlist[j].rmodlist;
+				break;
+				}	
+				}
+				} else {
+				for(int j = 0; j < lmodlist.size(); j++) {
+				if(strip_endl(lmodlist[j].name) == strip_endl(actionv[i].name) && strip_endl(lmodlist[j].rmodlist) == strip_endl(actionv[i].rmodlist)) {
+				actionv[i].lmidx = j;
+				break;
+				}	
+				}	
+				}
+		}
+		if(strip_endl(lmodlist[actionv[i].lmidx].repotype) == "archive") {
+		int ret;
+		ret = chdir(localrepo.c_str());
+		if(ret == -1) {
+			cerr << "Could not chdir to local repository: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
+		ret = mkdir(actionv[i].name.c_str(), "0755");
+		if(ret == -1 && errno != EEXIST) {
+		cerr << "Could not make a directory for mod files!" << endl;
+		return EXIT_FAILURE;
+		}
+		ofstream mp("modpack.txt");
+		if(!mp) {
+		cerr << "Could not create modpack.txt!" << endl;
+		return EXIT_FAILURE;
+		} else {
+			mp << "This is a modpack file created by 3m for Minetest to include subdirectories of this directory." << endl;
+			mp.close();
+		}
+		ret = chdir(actionv[i].name.c_str());
+		if(ret == -1) {
+			cerr << "Could not chdir to directory for mod files: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
+		string cmd = "";;
+		stringstream scmd;
+		scmd << "wget -N " << lmodlist[actionv[i].lmidx].repoaddr;
+		cmd = scmd.str();
+		ret = system(cmd.c_str());
+		if(ret == -1) {
+		cerr << "Could not execute wget!" << endl;	
+		} else {
+		int status = WEXITSTATUS(ret);
+		if(status != 0) {
+			cerr << "wget failed: ";
+		switch(status) {
+		case 1: cerr << "Generic error code!" << endl; break;
+		case 2: cerr << "Config parse error!" << endl; break;
+		case 3: cerr << "File I/O error!" << endl; break;
+		case 4: cerr << "Network failure!" << endl; break;
+		case 5: cerr << "SSL verification failure!" << endl; break;
+		case 6: cerr << "Username/password authentication failure!" << endl; break;
+		case 7: cerr << "Protocol error!" << endl; break;
+		case 8: cerr << "Server issued an error response!" << endl; break;
+		default: cerr << "Something failed!" << endl; break;
+		}
+		return EXIT_FAILURE;
+		}
+		scmd.str("");
+		scmd << "basename " << lmodlist[actionv[i].lmidx].repoaddr << " > dlbn";
+		cmd = scmd.str();
+		ret = system(cmd.c_str());
+		if(ret == -1) {
+		cout << "Could not execute basename!" << endl;
+		return EXIT_FAILURE;
+		}
+		ifstream dlbn("dlbn");
+		if(!dlbn) {
+		cout << "Could not open dlbn!" << endl;
+		return EXIT_FAILURE;
+		}
+		string dlfn;
+		while(!dlbn.eof()) {
+		char c;
+		c = dlbn.get();
+		if(dlbn) {
+		dlfn += c;	
+		}
+		}
+		dlbn.close();
+		dlfn = strip_endl(dlfn);
+		scmd.str("");
+		scmd << "7z x " << dlfn;
+		cmd = scmd.str();
+		ret = system(cmd.c_str());
+		if(ret == -1) {
+		cerr << "Could not execute 7z!" << endl;
+		return EXIT_FAILURE;
+		}
+		status = WEXITSTATUS(ret);
+		if(status == 2) {
+			cerr << "7z failed: Fatal error!" << endl;
+			return EXIT_FAILURE;
+		} else if(status == 7) {
+			cerr << "7z failed: Bad commandline arguments!" << endl;
+			return EXIT_FAILURE;
+		} else if(status == 8) {
+			cerr << "7z failed: Not enough memory!" << endl;
+			return EXIT_FAILURE;
+		} else if(status == 255) {
+			cerr << "7z failed: Aborted by user!" << endl;
+			return EXIT_FAILURE;
+		} else if(status == 1) {
+			cerr << "7z reported warnings!" << endl;	
+		} else {
+			if(actionv[i].installed == 1) {
+				for(int k = 0; k < repoinfo.size(); k++) {
+					if(strip_endl(repoinfo[k].name) == strip_endl(actionv[i].name)) {
+					string instpath;
+					stringstream sinstpath;
+					sinstpath << localrepo << "/" << actionv[i].name << endl;
+					instpath = sinstpath.str();
+					repoinfo[k].path = instpath;
+					repoinfo[k].release = lmodlist[actionv[i].lmidx].release;
+					break;
+					}
+				}
+			} else {
+			repoinfodata tmprid;
+			tmprid.name = actionv[i].name;
+			tmprid.release = lmodlist[actionv[i].lmidx].release;
+			string instpath;
+			stringstream sinstpath;
+			sinstpath << localrepo << "/" << actionv[i].name << endl;
+			instpath = sinstpath.str();
+			tmprid.path = instpath;
+			repoinfo.push_back(instpath);
+			}
+			cout << actionv[i].name << " installed successfully!" << endl;
+		}
+		}
+		} else if(strip_endl(lmodlist[actionv[i].lmidx].repotype) == "git") {
+		cout << "Not implemented yet..." << endl;	
+		} else {
+		cerr << "Bad repotype! Exiting..." << endl;
+		return EXIT_FAILURE;
+		}
+		}
+		ifstream ri(localri.c_str());
+			if(!ri) {
+			cerr << "Could not open local repoinfo file for writing!" << endl;
+			return EXIT_FAILURE;
+			}
+			for(int k = 0; k < repoinfo.size(); k++) {
+				ri << '{' << repoinfo[k].name << '}' << endl << "[release]" << endl << repoinfo[k].release << endl << "[path]" << endl << repoinfo[k].path << endl << "{end}" << endl;	
+			}
+			ri.close();
+			cout << "Installation finished successfully!" << endl;
 } else {
-	cout << "No such action: " << argv[1] << endl << "Usage: " << argv[0] << " [-S/I/R/Q/h/v] [options] modname1 modname2 ..." << endl;	
+	cout << "No such action: " << argv[1] << endl << "Usage: " << argv[0] << " [-S/I/U/R/Q/h/v] [options] arg1 arg2 ..." << endl;	
 }
 return EXIT_SUCCESS;
 }
