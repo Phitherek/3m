@@ -1560,6 +1560,11 @@ if(argv[1][1] == 'S') {
 			instpath = sinstpath.str();
 			tmprid.path = instpath;
 			repoinfo.push_back(tmprid);
+			ret = chdir("..");
+		if(ret == -1) {
+			cerr << "Could not chdir one level up: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
 			}
 			cout << actionv[i].name << " installed successfully!" << endl;
 		}
