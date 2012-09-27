@@ -1125,6 +1125,75 @@ for(int i = 0; i < arg.length(); i++) {
 return;
 }
 
+int checkdeps(int lmodlistidx, vector<lmodlistdata> lmodlist, vector<repoinfodata> repoinfo, vector<actlist> *pactionv) {
+	vector<actlist> actionv = *pactionv;
+	cout << "Checking dependencies for " << strip_endl(lmodlist[lmodlistidx].name) << "..." << endl;
+		int depsok = 1;
+		int deplmodlistidx = -1;
+		for(int j = 0; j < lmodlist[lmodlistidx].deps.size(); j++) {
+			int depignore = 0;
+			for(int k = 0; k < actionv.size(); k++) {
+				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(actionv[k].name)) {
+					cout << "Already installing: " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " - ignoring..." << endl;
+					depignore = 1;
+					break;
+				}
+			}
+				if(depignore == 0 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
+			for(int k = 0; k < lmodlist.size(); k++) {
+				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(lmodlist[k].name)) {
+				deplmodlistidx = k;
+				break;
+				}
+			}
+		if(deplmodlistidx == -1 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
+		cerr << "Could not satisfy dependencies for " << strip_endl(lmodlist[lmodlistidx].name) << endl << "(-S (Sync) action may resolve this)!" << endl;
+		depsok = 0;
+		break;
+		}
+			}
+				}
+	if(depsok == 1) {
+		for(int j = 0; j < lmodlist[lmodlistidx].deps.size(); j++) {
+		actlist depal;
+			depal = alclear(depal);
+			int depignore = 0;
+			for(int k = 0; k < actionv.size(); k++) {
+				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(actionv[k].name)) {
+					cout << "Already installing: " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " - ignoring..." << endl;
+					depignore = 1;
+					break;
+				}	
+	}
+	if(depignore == 0 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
+		depal.name = strip_endl(lmodlist[lmodlistidx].deps[j]);
+		for(int k = 0; k < repoinfo.size(); k++) {
+		if(strip_endl(repoinfo[k].name) == strip_endl(lmodlist[lmodlistidx].deps[j])) {
+		cout << strip_endl(lmodlist[lmodlistidx].deps[k]) << " already installed, not installing..." << endl;
+		depal.installed = 1;
+		break;
+		}
+	}
+	if(depal.installed == 0) {
+		int depret;
+		depret = checkdeps(deplmodlistidx, lmodlist, repoinfo, &actionv);
+		if(depret == 1) {
+			cout << "Dependency check failed!" << endl;
+		return 1;	
+		}
+		cout << "Adding dependency " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " for installation..." << endl;
+		depal.rmodlist = "";
+		actionv.push_back(depal);
+	}
+	}
+		}
+		*pactionv = actionv;
+		return 0;
+	} else {
+	return 1;	
+	}
+}
+
 int main(int argc, char **argv) {
 homedir = getenv("HOME");	
 string config, modlistsfn;
@@ -1358,62 +1427,13 @@ if(argv[1][1] == 'S') {
 	}
 	}
 		}
-		cout << "Checking dependencies for " << argv[i] << endl;
-		int depsok = 1;
-		for(int j = 0; j < lmodlist[lmodlistidx].deps.size(); j++) {
-			int deplmodlistidx = -1;
-			int depignore = 0;
-			for(int k = 0; k < actionv.size(); k++) {
-				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(actionv[k].name)) {
-					cout << "Already installing: " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " - ignoring..." << endl;
-					depignore = 1;
-					break;
-				}
-			}
-				if(depignore == 0 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
-			for(int k = 0; k < lmodlist.size(); k++) {
-				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(lmodlist[k].name)) {
-				deplmodlistidx = k;
-				break;
-				}
-			}
-		if(deplmodlistidx == -1 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
-		cerr << "Could not satisfy dependencies for " << argv[i] << endl << "(-S (Sync) action may resolve this)!" << endl;
-		depsok = 0;
-		break;
-		}
-			}
-				}
-	if(depsok == 1) {
-		for(int j = 0; j < lmodlist[lmodlistidx].deps.size(); j++) {
-		actlist depal;
-			depal = alclear(depal);
-			int depignore = 0;
-			for(int k = 0; k < actionv.size(); k++) {
-				if(strip_endl(lmodlist[lmodlistidx].deps[j]) == strip_endl(actionv[k].name)) {
-					cout << "Already installing: " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " - ignoring..." << endl;
-					depignore = 1;
-					break;
-				}	
-	}
-	if(depignore == 0 && strip_endl(lmodlist[lmodlistidx].deps[j]) != "none" && strip_endl(lmodlist[lmodlistidx].deps[j]) != "default") {
-		depal.name = lmodlist[lmodlistidx].deps[j];
-		for(int k = 0; k < repoinfo.size(); k++) {
-		if(strip_endl(repoinfo[k].name) == strip_endl(lmodlist[lmodlistidx].deps[j])) {
-		cout << strip_endl(lmodlist[lmodlistidx].deps[k]) << " already installed, not installing..." << endl;
-		depal.installed = 1;
-		break;
-		}
-	}
-	if(depal.installed == 0) {
-		cout << "Adding dependency " << strip_endl(lmodlist[lmodlistidx].deps[j]) << " for installation..." << endl;
-		depal.rmodlist = "";
-		actionv.push_back(depal);
-	}
-	}
+		int depret;
+		depret = checkdeps(lmodlistidx, lmodlist, repoinfo, &actionv);
+		if(depret == 1) {
+		cout << "Dependency check failed!" << endl;
+		return EXIT_FAILURE;
 		}
 		actionv.push_back(tmpal);
-	}
 		}
 		for(int i = 0; i < actionv.size(); i++) {
 			if(actionv[i].lmidx == -1) {
@@ -1421,7 +1441,7 @@ if(argv[1][1] == 'S') {
 				for(int j = 0; j < lmodlist.size(); j++) {
 				if(strip_endl(lmodlist[j].name) == strip_endl(actionv[i].name)) {
 				actionv[i].lmidx = j;
-				actionv[i].rmodlist = lmodlist[j].rmodlist;
+				actionv[i].rmodlist = strip_endl(lmodlist[j].rmodlist);
 				break;
 				}	
 				}
@@ -1543,7 +1563,7 @@ if(argv[1][1] == 'S') {
 					if(strip_endl(repoinfo[k].name) == strip_endl(actionv[i].name)) {
 					string instpath;
 					stringstream sinstpath;
-					sinstpath << localrepo << actionv[i].name;
+					sinstpath << localrepo << strip_endl(actionv[i].name);
 					instpath = sinstpath.str();
 					repoinfo[k].path = instpath;
 					repoinfo[k].release = lmodlist[actionv[i].lmidx].release;
@@ -1556,7 +1576,7 @@ if(argv[1][1] == 'S') {
 			tmprid.release = lmodlist[actionv[i].lmidx].release;
 			string instpath;
 			stringstream sinstpath;
-			sinstpath << localrepo << "/" << actionv[i].name << endl;
+			sinstpath << localrepo << strip_endl(actionv[i].name) << endl;
 			instpath = sinstpath.str();
 			tmprid.path = instpath;
 			repoinfo.push_back(tmprid);
@@ -1582,7 +1602,7 @@ if(argv[1][1] == 'S') {
 			return EXIT_FAILURE;
 			}
 			for(int k = 0; k < repoinfo.size(); k++) {
-				ri << '{' << repoinfo[k].name << '}' << endl << "[release]" << endl << repoinfo[k].release << endl << "[path]" << endl << repoinfo[k].path << endl << "{end}" << endl;	
+				ri << '{' << strip_endl(repoinfo[k].name) << '}' << endl << "[release]" << endl << repoinfo[k].release << endl << "[path]" << endl << strip_endl(repoinfo[k].path) << endl << "{end}" << endl;	
 			}
 			ri.close();
 			cout << "Installation finished successfully!" << endl;
