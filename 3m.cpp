@@ -1590,7 +1590,76 @@ if(argv[1][1] == 'S') {
 		}
 		}
 		} else if(strip_endl(lmodlist[actionv[i].lmidx].repotype) == "git") {
-		cout << "Not implemented yet..." << endl;	
+			int ret;
+		ret = chdir(localrepo.c_str());
+		if(ret == -1) {
+			cerr << "Could not chdir to local repository: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
+		ret = mkdir(actionv[i].name.c_str(), 0755);
+		if(ret == -1 && errno != EEXIST) {
+		cerr << "Could not make a directory for mod files!" << endl;
+		return EXIT_FAILURE;
+		}
+		ofstream mp("modpack.txt");
+		if(!mp) {
+		cerr << "Could not create modpack.txt!" << endl;
+		return EXIT_FAILURE;
+		} else {
+			mp << "This is a modpack file created by 3m for Minetest to include subdirectories of this directory." << endl;
+			mp.close();
+		}
+		ret = chdir(actionv[i].name.c_str());
+		if(ret == -1) {
+			cerr << "Could not chdir to directory for mod files: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
+		ofstream dmp("modpack.txt");
+		if(!dmp) {
+		cerr << "Could not create modpack.txt!" << endl;
+		return EXIT_FAILURE;
+		} else {
+			dmp << "This is a modpack file created by 3m for Minetest to include subdirectories of this directory." << endl;
+			dmp.close();
+		}
+		string cmd = "";
+		stringstream scmd;
+		scmd << "git clone " << strip_endl(lmodlist[actionv[i].lmidx].repoaddr);
+		cmd = scmd.str();
+		ret = system(cmd.c_str());
+		if(ret == -1){
+			cerr << "Could not execute git clone: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
+		if(actionv[i].installed == 1) {
+				for(int k = 0; k < repoinfo.size(); k++) {
+					if(strip_endl(repoinfo[k].name) == strip_endl(actionv[i].name)) {
+					string instpath;
+					stringstream sinstpath;
+					sinstpath << localrepo << strip_endl(actionv[i].name);
+					instpath = sinstpath.str();
+					repoinfo[k].path = instpath;
+					repoinfo[k].release = lmodlist[actionv[i].lmidx].release;
+					break;
+					}
+				}
+			} else {
+			repoinfodata tmprid;
+			tmprid.name = actionv[i].name;
+			tmprid.release = lmodlist[actionv[i].lmidx].release;
+			string instpath;
+			stringstream sinstpath;
+			sinstpath << localrepo << strip_endl(actionv[i].name) << endl;
+			instpath = sinstpath.str();
+			tmprid.path = instpath;
+			repoinfo.push_back(tmprid);
+			ret = chdir("..");
+		if(ret == -1) {
+			cerr << "Could not chdir one level up: " << strerror(errno) << endl;
+			return EXIT_FAILURE;
+		}
+			}
+			cout << actionv[i].name << " installed successfully!" << endl;
 		} else {
 		cerr << "Bad repotype! Exiting..." << endl;
 		return EXIT_FAILURE;
