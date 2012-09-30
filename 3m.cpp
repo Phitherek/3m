@@ -1,8 +1,10 @@
 #include <iostream>
 #include <cstdlib>
+#include <cstdio>
 #include <sys/socket.h> // For sockets
 #include <sys/types.h> // For getaddrinfo
 #include <sys/stat.h> // For mkdir etc.
+#include <dirent.h>
 #include <arpa/inet.h> // For inet addr conversion
 #include <netdb.h> // For getaddrinfo
 #include <cstring> // For memset
@@ -1194,6 +1196,63 @@ int checkdeps(int lmodlistidx, vector<lmodlistdata> lmodlist, vector<repoinfodat
 	}
 }
 
+int recursive_rmdir(string dirname) {
+	if(dirname == "." || dirname == "..") {
+	return 0;	
+	}
+dirent *d;
+DIR *dir = opendir(dirname.c_str());
+if(dir == NULL) {
+	FILE *fp = fopen(dirname.c_str(), "r");
+	if(!fp) {
+	return 1;	
+	} else {
+	fclose(fp);
+	closedir(dir);
+	int ret = unlink(dirname.c_str());
+	if(ret == -1) {
+		cerr << "Unlink error: " << strerror(errno) << endl;
+		return 1;
+	} else {
+	return 0;	
+	}
+	}
+} else {
+	int n = 0;
+	while ((d = readdir(dir)) != NULL) {
+		n++;
+		if(n > 2) {
+			if(n == 3) {
+		int ret = chdir(dirname.c_str());
+		if(ret == -1) {
+			cerr << "Could not chdir: " << strerror(errno) << endl;
+			return 1;
+		}
+			}
+		int ret = recursive_rmdir(d -> d_name);
+		if(ret == 1) {
+		cerr << "recursive_rmdir failed!" << endl;
+		return 1;
+		}
+		}
+	}
+	if(n > 2) {
+	int ret = chdir("..");	
+	if(ret == -1) {
+		cerr << "Could not chdir: " << strerror(errno) << endl;
+		return 1;
+	}
+	closedir(dir);
+	ret = rmdir(dirname.c_str());
+	if(ret == -1) {
+		cerr << "Could not rmdir: " << strerror(errno) << endl;
+		return 1;
+	}
+	return 0;
+	}
+}
+}
+
 int main(int argc, char **argv) {
 homedir = getenv("HOME");	
 string config, modlistsfn;
@@ -1676,6 +1735,66 @@ if(argv[1][1] == 'S') {
 			ri.close();
 			cout << "Installation finished successfully!" << endl;
 	}
+} else if(argv[1][1] == 'R') {
+	if(argc < 3) {
+	cerr << "You must enter at least one mod name! Exiting..." << endl;
+	return EXIT_FAILURE;	
+	}
+	int eri = 0;
+	vector<repoinfodata> repoinfo;
+	int ripr;
+	ripr = parserepoinfo(&repoinfo, localri);
+	if(ripr == 1) {
+	cerr << "Local repoinfo parse error! Exiting..." << endl;
+	return EXIT_FAILURE;	
+	}
+	for(int i = 2; i < argc; i++) {
+	int ridx = -1;
+	for(int j = 0; j < repoinfo.size(); j++) {
+		if(strip_endl(repoinfo[j].name) == strip_endl(argv[i])) {
+		ridx = j;	
+		}
+	}
+	if(ridx == -1) {
+	cerr << "Mod " << argv[i] << " not found in local repository! Skipping..." << endl;	
+	} else {
+	int ret = chdir(localrepo.c_str());
+	if(ret == -1) {
+		cerr << "Could not chdir to local repository: " << errno << endl;
+		return EXIT_FAILURE;
+	}
+	ret = recursive_rmdir(repoinfo[ridx].name.c_str());
+	if(ret == 1) {
+	cerr << "Error in recursive_rmdir for " << argv[i] << "! Skipping..." << endl;	
+	} else {
+		vector<repoinfodata>::iterator it;
+		int k;
+		for(it = repoinfo.begin(), k = 0; it < repoinfo.end() && k <= ridx; k++, it++);
+		it = repoinfo.erase(it);
+		if(it == repoinfo.end()) {
+		eri = 1;
+		ret = unlink(localri.c_str());
+		if(ret == -1) {
+		cerr << "Could not delete empty repoinfo file: " << strerror(errno) << endl;
+		return EXIT_FAILURE;
+		}
+		}
+		cout << argv[i] << " successfully removed!" << endl;
+	}
+	}
+}
+if(eri == 0) {
+ofstream ri(localri.c_str());
+			if(!ri) {
+			cerr << "Could not open local repoinfo file for writing!" << endl;
+			return EXIT_FAILURE;
+			}
+			for(int k = 0; k < repoinfo.size(); k++) {
+				ri << '{' << strip_endl(repoinfo[k].name) << '}' << endl << "[release]" << endl << repoinfo[k].release << endl << "[path]" << endl << strip_endl(repoinfo[k].path) << endl << "{end}" << endl;	
+			}
+			ri.close();
+}
+			cout << "Removal finished successfully!" << endl;
 } else {
 	cout << "No such action: " << argv[1] << endl << "Usage: " << argv[0] << " [-S/I/U/R/Q/h/v] [options] arg1 arg2 ..." << endl;	
 }
