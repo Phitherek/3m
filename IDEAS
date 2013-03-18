@@ -57,3 +57,40 @@ Settings:
 path_to_local_minetest_mods_repo
 [modlist]
 path_to_modlist_3mml
+---
+NEW 3m:
+1. Use my NetSocket++ library:
+https://github.com/Phitherek/NetSocket--
+http://www.phitherek.mooo.com/doxy/libnetsocketpp
+This will spare a lot of socket code and shrink the code.
+2. Classes:
+ModListData
+LocalModListData
+RemoteModListData
+RepoInfoData
+RemoteModInfo
+ModList
+ActionList
+And every one of these in separate .cpp and .h file.
+Content of the classes like in structs.
++ methods:
+clear()
+parse() (for some)
+get() (for some)
+3. Untouched functions:
+strip_endl();
+4. Exceptions:
+Handlers for NetSocket++ exceptions.
++
+ParseException
+ExtractException
+DownloadException
+FileException
+... and everything that somehow will be needed in the process.
+5. APIs rather than external programs:
+There are so many C++ libraries that I think I should find ones for 7z (p7zip) and wget (or something similar) - it is always better than executing programs by "system".
+6. Rewrite
+3m must be rewritten in separate branch with the use of existing code.
+7. Finish it finally
+3m is not complete. Missing actions must be programmed.
+
