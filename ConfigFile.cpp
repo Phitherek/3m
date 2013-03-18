@@ -10,15 +10,15 @@ conf.close();
 throw FileException(path, "reading", "Could not open file!");
 }
 _path = path;
-string action = "parse";
+std::string action = "parse";
 while(!conf.eof()) {
 std::string line = "";
 conf >> line;
 if(conf) {
 if(action == "parse") {
 if(line[0] == '[') {
-int i = 1;
-string sa = "";
+unsigned int i = 1;
+std::string sa = "";
 while(line[i] != ']') {
 if(i >= line.length()-1 && line[i] != ']') {
 std::string err = "";

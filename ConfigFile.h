@@ -32,3 +32,4 @@ public:
 	void write(); ///< A function that writes the changes to config file.
 };
 }
+#endif

@@ -1,23 +1,15 @@
 all:
-	g++ -o 3m 3m.cpp
 	make -C filetesters
+	make -C tests
 debug:
-	g++ -o 3m 3m.cpp -g
 	make -C filetesters debug
+	make -C tests debug
 clean:
-	rm 3m
 	make -C filetesters clean
+	make -C tests clean
 cleantemp:
 	rm *~
 	make -C filetesters cleantemp
-3m:
-	g++ -o 3m 3m.cpp
-3mdebug:
-	g++ -o 3m 3m.cpp -g
-3mclean:
-	rm 3m
-3mcleantemp:
-	rm *~
 filetesters:
 	make -C filetesters
 ftdebug:
@@ -26,3 +18,9 @@ ftclean:
 	make -C filetesters clean
 ftcleantemp:
 	make -C filetesters cleantemp
+tests:
+	make -C tests
+testsdebug:
+	make -C tests debug
+testsclean:
+	make -C testsclean
