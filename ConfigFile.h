@@ -7,8 +7,9 @@
 /// \date 2013
 /// \version 0.1-pre
 
-/// \namespace 3m
+/// \namespace mmm
 /// \brief A global namespace for 3m
+namespace mmm {
 
 /// \class ConfigFile
 /// \brief A class that parses and stores 3m configuration.
