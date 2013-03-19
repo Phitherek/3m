@@ -28,10 +28,58 @@ conf.write();
 cout << "All OK! Thank you for testing!" << endl;
 return EXIT_SUCCESS;
 } catch(mmm::FileException& exc) {
-cout << "File exception occured: " << exc.what() << endl;
-return 1;
+cerr << "File exception occured: " << exc.what() << endl;
+cout << "Failed to open file, creating new..." << endl;
+mmm::ConfigFile conf;
+conf.setPath(path);
+string localpath, modlist, repoinfo;
+cout << "Enter new localpath: " << endl;
+cin >> localpath;
+cout << "modlist: " << endl;
+cin >> modlist;
+cout << "repoinfo: " << endl;
+cin >> repoinfo;
+conf.getLocalPath() = localpath;
+conf.getModList() = modlist;
+conf.getRepoInfo() = repoinfo;
+cout << "Generating the config file..." << endl;
+try {
+conf.write();
+cout << "All OK! Thank you for testing!" << endl;
+return EXIT_SUCCESS;
+} catch(mmm::FileException& exc) {
+	cerr << "File exception occured: " << exc.what() << endl;
+	return 1;
 } catch(mmm::ParseException& exc) {
-cout << "Parse exception occured: " << exc.what() << endl;
-return 2;
+	cerr << "Parse exception occured: " << exc.what() << endl;
+	return 2;
+}
+} catch(mmm::ParseException& exc) {
+cerr << "Parse exception occured: " << exc.what() << endl;
+cout << "Failed to parse file, creating new..." << endl;
+mmm::ConfigFile conf;
+conf.setPath(path);
+string localpath, modlist, repoinfo;
+cout << "Enter new localpath: " << endl;
+cin >> localpath;
+cout << "modlist: " << endl;
+cin >> modlist;
+cout << "repoinfo: " << endl;
+cin >> repoinfo;
+conf.getLocalPath() = localpath;
+conf.getModList() = modlist;
+conf.getRepoInfo() = repoinfo;
+cout << "Generating the config file..." << endl;
+try {
+conf.write();
+cout << "All OK! Thank you for testing!" << endl;
+return EXIT_SUCCESS;
+} catch(mmm::FileException& exc) {
+	cerr << "File exception occured: " << exc.what() << endl;
+	return 1;
+} catch(mmm::ParseException& exc) {
+	cerr << "Parse exception occured: " << exc.what() << endl;
+	return 2;
+}
 }
 }

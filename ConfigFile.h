@@ -20,6 +20,7 @@ private:
 	std::string _modlist;
 	std::string _repoinfo;
 public:
+	ConfigFile(); ///< A default constructor of an empty object
 	ConfigFile(std::string path); ///< \brief A constructor from file path.
 	///< Tries to open the config file and parse it. It throws FileException or ParseException.
 	/// \param path Path to the config file.
@@ -29,6 +30,8 @@ public:
 	///< \return A reference to local modlist file path.
 	std::string& getRepoInfo(); ///< \brief A function returning a reference to local repoinfo file path.
 	///< \return A reference to local repoinfo file path
+	void setPath(std::string path); ///< \brief A function setting the path of config file.
+	///< \param path A path to config file.
 	void write(); ///< A function that writes the changes to config file.
 };
 }

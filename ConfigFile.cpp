@@ -3,6 +3,13 @@
 #include <fstream>
 using namespace mmm;
 
+ConfigFile::ConfigFile() {
+_path = "";
+_localpath = "";
+_modlist = "";
+_repoinfo = "";
+}
+
 ConfigFile::ConfigFile(std::string path) {
 std::ifstream conf(path.c_str());
 if(!conf) {
@@ -93,6 +100,10 @@ std::string& ConfigFile::getModList() {
 
 std::string& ConfigFile::getRepoInfo() {
 	return _repoinfo;
+}
+
+void ConfigFile::setPath(std::string path) {
+	_path = path;
 }
 
 void ConfigFile::write() {
