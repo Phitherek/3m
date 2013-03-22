@@ -35,12 +35,12 @@ int ModDescription::getReleaseNr() {
 }
 
 std::string ModDescription::getNextDependency() {
-	if(_depsIterator + 2 < _deps.size()) {
+	if(_depsIterator + 1 < _deps.size()) {
 		_depsIterator++;
 		return _deps[_depsIterator];
 	} else {
 		_depsAtEnd = true;
-		return "getNextDependency failed...";
+		return "";
 	}
 }
 
@@ -79,10 +79,13 @@ void ModDescription::setRepositoryAddress(std::string repoaddr) {
 	_repoaddr = repoaddr;
 }
 
-void resetDependencyIterator() {
+void ModDescription::resetDependencyIterator() {
 	_depsIterator = -1;
+	if(_depsAtEnd == true) {
+		_depsAtEnd = false;
+	}
 }
 
-bool dependenciesEnd() {
+bool ModDescription::dependenciesEnd() {
 	return _depsAtEnd;
 }

@@ -10,7 +10,7 @@
 
 /// \namespace mmm
 /// \brief A global namespace for 3m
-namespace mmm }
+namespace mmm {
 /// \class ModDescription
 /// \brief A class describing a mod.
 class ModDescription {
@@ -30,7 +30,7 @@ public:
 	///< \return Mod name.
 	std::string getDescription(); ///< \brief A function returning mod description.
 	///< \return Mod description.
-	std::string getReleaseNr(); ///< \brief A function returning 3m package release number.
+	int getReleaseNr(); ///< \brief A function returning 3m package release number.
 	///< \return 3m package release number.
 	std::string getNextDependency(); ///< \brief A function returning next dependency from the dependency list.
 	///< \return Next dependency from the dependency list.
