@@ -1,8 +1,9 @@
 ModDescription: name, description, release, deps, repotype, repoaddr
-ModList: ModListDescription, vector<ModDescription>
+ModList: ModListDescription, vector<ModInfoDescription>
 LocalModDescription: ModDescription + remoteModlist (inheritance)
 LocalModList: vector<LocalModDescription>
 RepositoryModDescription: ModDescription + path (inheritance)
 RepositoryInfo: vector<RepositoryModDescription>
 ModListDescription: name, server, modlistPath
 ModInfoDescription: name, server, modinfoPath
+ModInfo: ModInfoDescription, vector<ModDescription>
