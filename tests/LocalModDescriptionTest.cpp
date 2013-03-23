@@ -6,7 +6,7 @@ using namespace std;
 int main() {
 mmm::LocalModDescription md;
 md.setName("test");
-md.setDescription("Test ModDescription entry");
+md.setDescription("Test LocalModDescription entry");
 md.setReleaseNr(1);
 md.setRemoteModlistName("test");
 md.setRepositoryType("archive");
