@@ -7,3 +7,9 @@ RepositoryInfo: vector<RepositoryModDescription>
 ModListDescription: name, server, modlistPath
 ModInfoDescription: name, server, modinfoPath
 ModInfo: ModInfoDescription, vector<ModDescription>
+ParameterParser: actionList, argc, argv
+SyncAction
+InstallAction
+UpdateAction
+RemoveAction
+InfoAction
