@@ -28,8 +28,8 @@ public:
 	///< \return Whole error message.
 };
 /// \class ParseException
-/// \brief An exception to be throw when parse error occurs.
-class ParseException {
+/// \brief An exception to be thrown when parse error occurs.
+class ParseException: public std::exception {
 private:
 	std::string _filename;
 	std::string _err;
@@ -40,6 +40,18 @@ public:
 	~ParseException() throw(); /// \brief A destructor, as needed by std::exception.
 	const char* what() const throw(); ///< \brief A function, that returns the whole error.
 	///< \return Whole error message.
+};
+/// \class OutOfBoundsException
+/// \brief An exception to be thrown when the iterator gets out of container bounds.
+class OutOfBoundsException: public std::exception {
+private:
+	std::string _what;
+public:
+	OutOfBoundsException(std::string what); ///< \brief A constructor with parameters.
+	///< \param what Error message.
+	~OutOfBoundsException() throw(); ///< A destructor, as needed by std::exception.
+	const char* what() const throw(); ///< \brief A function returning error message.
+	/// \return Error message.	
 };
 }
 #endif

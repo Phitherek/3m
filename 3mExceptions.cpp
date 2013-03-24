@@ -40,3 +40,15 @@ const char* ParseException::what() const throw() {
 	msg += _err;
 	return msg.c_str();	
 }
+
+OutOfBoundsException::OutOfBoundsException(std::string what) {
+	_what = what;
+}
+
+OutOfBoundsException::~OutOfBoundsException() throw() {
+	_what = "";
+}
+
+const char* OutOfBoundsException::what() const throw() {
+	return _what.c_str();
+}

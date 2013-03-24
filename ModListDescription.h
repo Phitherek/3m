@@ -36,6 +36,7 @@ public:
 	///< \param server Server with remote modlist.
 	void setPath(std::string path); ///< \brief A function setting remote modlist path on server.
 	///< \param path Remote modlist path on server.
+	void clear(); ///< A function that clears the object.
 };
 }
 #endif

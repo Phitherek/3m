@@ -7,6 +7,12 @@ _server = "";
 _path = "";
 }
 
+ModListDescription::~ModListDescription() {
+_name = "";
+_server = "";
+_path = "";
+}
+
 ModListDescription::ModListDescription(std::string name, std::string server, std::string path) {
 _name = name;
 _server = server;
@@ -35,4 +41,10 @@ _server = server;
 
 void ModListDescription::setPath(std::string path) {
 _path = path;	
+}
+
+void ModListDescription::clear() {
+	_name = "";
+	_server = "";
+	_path = "";
 }

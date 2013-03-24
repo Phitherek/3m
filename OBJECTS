@@ -1,10 +1,11 @@
 ModDescription: name, description, release, deps, repotype, repoaddr x
 ModList: ModListDescription, vector<ModInfoDescription>
+ModListList: vector<ModListDescription>
 LocalModDescription: ModDescription + remoteModlist (inheritance) x
-LocalModList: vector<LocalModDescription>
-RepositoryModDescription: ModDescription + path (inheritance)
-RepositoryInfo: vector<RepositoryModDescription>
-ModListDescription: name, server, modlistPath
+LocalModList: vector<LocalModDescription>, ConfigFile
+RepositoryModDescription: ModDescription + path (inheritance) x
+RepositoryInfo: vector<RepositoryModDescription>, ConfigFile
+ModListDescription: name, server, modlistPath x
 ModInfoDescription: name, server, modinfoPath x
 ModInfo: ModInfoDescription, vector<ModDescription>
 ParameterParser: actionList, argc, argv
