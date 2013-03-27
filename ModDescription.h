@@ -53,6 +53,9 @@ public:
 	void resetDependencyIterator(); ///< A function resetting the iterator of the dependency list.
 	bool dependenciesEnd(); ///< \brief A function returning if dependency list is at its end.
 	///< \return True if dependency list iterator reached its end, false otherwise.
+	bool dependenciesEmpty(); ///< \brief A function returning if dependency list is empty.
+	///< \return True if dependency list is empty, false otherwise.
+	void clear(); ///< A function that clears the object.
 };
 }
 #endif

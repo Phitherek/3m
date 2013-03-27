@@ -37,3 +37,4 @@ public:
 	///< \param path Modinfo path on server.
 };
 }
+#endif

@@ -9,6 +9,7 @@ ModDescription::ModDescription() {
 	_depsAtEnd = true;
 	_repotype = "";
 	_repoaddr = "";
+	_deps.clear();
 }
 
 ModDescription::~ModDescription() {
@@ -20,6 +21,7 @@ ModDescription::~ModDescription() {
 	_depsAtEnd = true;
 	_repotype = "";
 	_repoaddr = "";
+	_deps.clear();
 }
 
 std::string ModDescription::getName() {
@@ -88,4 +90,19 @@ void ModDescription::resetDependencyIterator() {
 
 bool ModDescription::dependenciesEnd() {
 	return _depsAtEnd;
+}
+
+bool ModDescription::dependenciesEmpty() {
+	return _deps.empty();
+}
+
+void ModDescription::clear() {
+	_name = "";
+	_description = "";
+	_release = 0;
+	_depsIterator = -1;
+	_depsAtEnd = true;
+	_repotype = "";
+	_repoaddr = "";
+	_deps.clear();
 }

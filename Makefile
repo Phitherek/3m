@@ -23,4 +23,4 @@ tests:
 testsdebug:
 	make -C tests debug
 testsclean:
-	make -C testsclean
+	make -C tests clean

@@ -22,6 +22,7 @@ std::string getRemoteModlistName(); ///< \brief A function returning remote modl
 ///< \return Remote modlist name.
 void setRemoteModlistName(std::string remoteModlist); ///< \brief A function setting remote modlist name.
 ///< \param remoteModlist Remote modlist name
+void clear(); ///< A function that clears the object.
 };
 }
 #endif
