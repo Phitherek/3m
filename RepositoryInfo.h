@@ -42,6 +42,5 @@ public:
 	void setConfigFile(ConfigFile conf); ///< \brief A function that sets ConfigFile in the object.
 	///< \param conf A ConfigFile object.
 	void write(); ///< A function that writes back the repository info file.
-	void clear(); ///< A function that clears the object.
 };
 }

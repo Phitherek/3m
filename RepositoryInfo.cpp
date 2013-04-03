@@ -186,11 +186,3 @@ for(unsigned int i = 0; i < _repoinfo.size(); i++) {
 }
 rifile.close();
 }
-
-void RepositoryInfo::clear() {
-	ConfigFile emptyconf;
-	_conf = emptyconf;
-	_repoinfo.clear();
-	_repoinfoIterator = -1;
-	_repoinfoAtEnd = false;
-}

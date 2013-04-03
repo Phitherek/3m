@@ -22,6 +22,7 @@ public:
 	///< \return Installation path of the mod.
 	void setPath(std::string path); ///< \brief A function that sets installation path of the mod.
 	///< \param path Installation path of the mod.
+	void clear(); ///< A function that clears the object.
 };
 }
 #endif

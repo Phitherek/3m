@@ -16,3 +16,9 @@ std::string RepositoryModDescription::getPath() {
 void RepositoryModDescription::setPath(std::string path) {
 	_path = path;
 }
+
+void RepositoryModDescription::clear() {
+	_name = "";
+	_release = 0;
+	_path = "";
+}
