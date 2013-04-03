@@ -44,3 +44,4 @@ public:
 	void write(); ///< A function that writes back the repository info file.
 };
 }
+#endif

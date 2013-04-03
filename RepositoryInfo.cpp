@@ -1,6 +1,7 @@
 #include "RepositoryInfo.h"
 #include "3mExceptions.h"
 #include <fstream>
+#include <cstdlib>
 using namespace mmm;
 
 RepositoryInfo::RepositoryInfo() {
@@ -27,7 +28,7 @@ while(!rifile.eof()) {
 	if(action == "detect") {
 		if(line[0] == '{') {
 		std::string name = "";
-		for(int i = 1; line[i] != '}' && i < line.length(); i++) {
+		for(unsigned int i = 1; line[i] != '}' && i < line.length(); i++) {
 			name += line[i];
 		}
 		tmprid.setName(name);
@@ -61,7 +62,7 @@ while(!rifile.eof()) {
 		}
 	} else if(line[0] == '[') {
 		std::string tmpact = "";
-		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		for(unsigned int i = 1; line[i] != ']' && i < line.length(); i++) {
 		tmpact += line[i];
 		}
 		if(tmpact == "release" || tmpact == "path") {
@@ -91,7 +92,7 @@ while(!rifile.eof()) {
 			rifile.close();
 			throw ParseException(rifn, msg);
 		} else {
-			tmprid.setReleaseNr(line.c_str());
+			tmprid.setReleaseNr(atoi(line.c_str()));
 			action = "parse";
 		}
 	} else if(action == "path") {

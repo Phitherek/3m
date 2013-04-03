@@ -4,7 +4,7 @@ ModListList: vector<ModListDescription> x
 LocalModDescription: ModDescription + remoteModlist (inheritance) x
 LocalModList: vector<LocalModDescription>, ConfigFile x
 RepositoryModDescription: ModDescription + path (inheritance) x
-RepositoryInfo: vector<RepositoryModDescription>, ConfigFile
+RepositoryInfo: vector<RepositoryModDescription>, ConfigFile x
 ModListDescription: name, server, modlistPath x
 ModInfoDescription: name, server, modinfoPath x
 ModInfo: ModInfoDescription, vector<ModDescription>
