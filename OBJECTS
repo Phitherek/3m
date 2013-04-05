@@ -14,4 +14,3 @@ SyncAction
 InstallAction
 UpdateAction
 RemoveAction
-InfoAction

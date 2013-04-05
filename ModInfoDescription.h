@@ -35,6 +35,7 @@ public:
 	///< \param server Server with modinfo.
 	void setPath(std::string path); ///< \brief A function setting modinfo path on server.
 	///< \param path Modinfo path on server.
+	void clear(); ///< A function clearing the object.
 };
 }
 #endif

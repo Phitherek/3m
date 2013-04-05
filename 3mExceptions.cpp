@@ -41,14 +41,28 @@ const char* ParseException::what() const throw() {
 	return msg.c_str();	
 }
 
-OutOfBoundsException::OutOfBoundsException(std::string what) {
+BadResponseException::BadResponseException(std::string response) {
+	_response = response;
+}
+
+BadResponseException::~BadResponseException() throw() {
+	_response = "";
+}
+
+const char* BadResponseException::what() const throw() {
+	std::string what = "Got HTTP response: ";
+	what += _response;
+	return what.c_str();
+}
+
+NonEditableException::NonEditableException(std::string what) {
 	_what = what;
 }
 
-OutOfBoundsException::~OutOfBoundsException() throw() {
+NonEditableException::~NonEditableException() throw() {
 	_what = "";
 }
 
-const char* OutOfBoundsException::what() const throw() {
+const char* NonEditableException::what() const throw() {
 	return _what.c_str();
 }

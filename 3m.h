@@ -10,6 +10,8 @@
 #include "ModListList.h"
 #include "RepositoryModDescription.h"
 #include "LocalModList.h"
+#include "RepositoryModDescription.h"
+#include "NetSocket++/NetSocketPP.h"
 /// \file 3m.h
 /// \brief A common header for 3m and definitions of helper functions.
 /// \author Phitherek_
@@ -33,6 +35,19 @@ std::string strip_endl(std::string s) {
 		}
 	}
 	return s;
+}
+
+/// \fn std::string strgetline(std::string *str)
+/// \brief A function that gets line from the multiline string and erases it from this string.
+/// \param[in,out] str A pointer to the string to get line from. The line is erased from the string.
+/// \return Line from the string.
+std::string strgetline(std::string *str) {
+std::string line = "";
+int i;
+for(i = 0; (*str)[i] != '\n'; i++) {
+line += (*str)[i];
+}
+return line;
 }
 }
 #endif

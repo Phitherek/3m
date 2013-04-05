@@ -36,3 +36,9 @@ _server = server;
 void ModInfoDescription::setPath(std::string path) {
 _path = path;	
 }
+
+void ModInfoDescription::clear() {
+_name = "";
+_server = "";
+_path = "";
+}

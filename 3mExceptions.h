@@ -41,17 +41,29 @@ public:
 	const char* what() const throw(); ///< \brief A function, that returns the whole error.
 	///< \return Whole error message.
 };
-/// \class OutOfBoundsException
-/// \brief An exception to be thrown when the iterator gets out of container bounds.
-class OutOfBoundsException: public std::exception {
+/// \class BadResponseException
+/// \brief An exception to be thrown on not 200 HTTP response.
+class BadResponseException: public std::exception {
 private:
-	std::string _what;
+	std::string _response;
 public:
-	OutOfBoundsException(std::string what); ///< \brief A constructor with parameters.
-	///< \param what Error message.
+	OutOfBoundsException(std::string response); ///< \brief A constructor with parameters.
+	///< \param response HTTP response that caused the exception.
 	~OutOfBoundsException() throw(); ///< A destructor, as needed by std::exception.
 	const char* what() const throw(); ///< \brief A function returning error message.
 	/// \return Error message.	
+};
+/// \class NonEditableException
+/// \brief An exception to be thrown when trying to write a remotely obtained, non-editable structure.
+class NonEditableException: public std::exception {
+private:
+	std::string _what;
+public:
+	NonEditableException(std::string what); ///< \brief A constructor with parameters.
+	///< \param what Error message.
+	~NonEditableException() throw(); ///< A destructor, as needed by std::exception.
+	const char* what() const throw(); ///< \brief A function returning error message.
+	/// \return Error message.
 };
 }
 #endif
