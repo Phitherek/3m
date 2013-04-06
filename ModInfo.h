@@ -30,6 +30,8 @@ void setPath(std::string path); ///< \brief A function that sets local modinfo f
 ///< \param path A path to local modinfo file.
 void setModInfoDescription(ModInfoDescription mid); ///< \brief A function that sets ModInfoDescription in the object.
 ///< \param mid A ModInfoDescription object.
+ModInfoDescription getModInfoDescription(); ///< \brief A function that returns ModInfoDescription object.
+///< \return ModInfoDescription object.
 void write(); ///< A function that writes the changes to local modinfo file.
 void releaseInc(); ///< A function that increases modinfo release.
 ~ModInfo(); ///< A destructor.

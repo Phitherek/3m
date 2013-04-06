@@ -40,12 +40,13 @@ public:
 	///< \return ModInfo or empty ModInfo object on failure.
 	void insertModInfoDescription(ModInfoDescription mid); ///< \brief A function that inserts a ModInfoDescription to the modlist.
 	///< \param mid A ModInfoDescription to be inserted.
-	void deleteModInfoDescription(std::string name); ///< \brief A function that deletes ModInfoDescription of given name from the modlist.
+	void deleteModInfo(std::string name); ///< \brief A function that deletes ModInfo of given name from the modlist.
 	///< \param name Modinfo name.
 	void resetModInfoIterator(); ///< A function that resets modlist iterator.
 	bool modinfosEnd(); ///< \brief A function, that returns if modlist iterator reached its end.
 	///< \return True if modlist iterator reached its end, false otherwise.
 	void write(); ///< A function that writes modlist to local file.
+	void clear(); ///< A function that clears the object.
 };
 }
 #endif

@@ -357,3 +357,7 @@ void ModInfo::clear() {
 void ModInfo::setModInfoDescription(ModInfoDescripion mid) {
 	_desc = mid;
 }
+
+ModInfoDescription ModInfo::getModInfoDescription() {
+	return _desc;
+}
