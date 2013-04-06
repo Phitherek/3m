@@ -1,6 +1,7 @@
 #ifndef _3M_H
 #define _3M_H
 #include <string>
+#include <vector>
 #include "ConfigFile.h"
 #include "3mExceptions.h"
 #include "LocalModDescription.h"
@@ -21,11 +22,11 @@
 /// \namespace mmm
 /// \brief A global namespace for 3m.
 namespace mmm {
-/// \fn std::string strip_endl(std::string s)
+/// \fn inline std::string strip_endl(std::string s)
 /// \brief A function that strips endline signs from the string.
 /// \param s A string to strip endline signs from.
 /// \return Stripped string.
-std::string strip_endl(std::string s) {
+inline std::string strip_endl(std::string s) {
 	int len = s.length();
 	for(int i = 0; i < len; i++) {
 		if(s[i] == '\n') {
@@ -37,17 +38,25 @@ std::string strip_endl(std::string s) {
 	return s;
 }
 
-/// \fn std::string strgetline(std::string *str)
-/// \brief A function that gets line from the multiline string and erases it from this string.
-/// \param[in,out] str A pointer to the string to get line from. The line is erased from the string.
-/// \return Line from the string.
-std::string strgetline(std::string *str) {
+/// \fn inline std::vector<std::string> strtovec(std::string *str)
+/// \brief A function that converts a multiline string to a vector of strings.
+/// \param str A string to convert to vector.
+/// \return Vector of strings, each one a line from original string
+inline std::vector<std::string>& strtovec(std::string str) {
 std::string line = "";
-int i;
-for(i = 0; (*str)[i] != '\n'; i++) {
-line += (*str)[i];
+static std::vector<std::string> vec;
+vec.clear();
+for(unsigned int i = 0; i < str.length(); i++) {
+	if(str[i] == '\n' || str[i] == '\r') {
+		if(line != "") {
+			vec.push_back(line);
+			line = "";
+		}
+	} else {
+		line += str[i];
+	}
 }
-return line;
+return vec;
 }
 }
 #endif

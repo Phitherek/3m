@@ -1,6 +1,9 @@
 #include "ModInfo.h"
 #include "NetSocket++/NetSocketPP.h"
 #include <fstream>
+#include <iostream>
+#include <cstdlib>
+#include <vector>
 using namespace mmm;
 
 ModInfo::ModInfo() {
@@ -27,11 +30,12 @@ ModInfo::ModInfo(ModInfoDescription mid) {
 	if(data.getResponse() != "200 OK") {
 		throw BadResponseException(data.getResponse());
 	}
-	std::string modinfo = data.getContent();
+	std::string smodinfo = data.getContent();
+	std::vector<std::string> modinfo = strtovec(smodinfo);
 	std::string action = "detect";
-for(unsigned int i = 0; i < modinfo.length(); i++) {
+for(unsigned int i = 0; i < modinfo.size(); i++) {
 	std::string line = "";
-	line = strgetline(&modinfo);
+	line = modinfo[i];
 	if(line[0] != NULL && line[0] != ' ' && line[0] != '\n' && line[0] != '\r') {
 	if(action == "detect") {
 		if(line[0] == '{') {
@@ -40,6 +44,7 @@ for(unsigned int i = 0; i < modinfo.length(); i++) {
 			name += line[i];
 		}
 		_name = name;
+		_desc.setName(name);
 		action = "parse";
 		} else {
 			std::string msg = "";
@@ -182,6 +187,7 @@ ModInfo::ModInfo(std::string path) {
 			name += line[i];
 		}
 		_name = name;
+		_desc.setName(name);
 		action = "parse";
 		} else {
 			std::string msg = "";
@@ -307,7 +313,7 @@ void ModInfo::write() {
 		throw NonEditableException("Tried to write back remotely obtained modinfo file!");
 	}
 	std::ofstream modinfo(_localPath.c_str());
-	if(!ofstream) {
+	if(!modinfo) {
 		throw FileException(_localPath, "writing", "Could not open file!");
 	}
 	modinfo << "{" << _name << "}" << std::endl << "[description]" << std::endl << _description << std::endl << "[release]" << std::endl << _release << std::endl << "[deps]" << std::endl;
@@ -326,7 +332,7 @@ void ModInfo::releaseInc() {
 	_release++;
 }
 
-void ModInfo::~ModInfo() {
+ModInfo::~ModInfo() {
 	ModInfoDescription emptymid;
 	_desc = emptymid;
 	_edit = false;

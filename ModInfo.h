@@ -20,7 +20,7 @@ bool _edit;
 std::string _localPath;
 public:
 ModInfo(); ///< A constructor.
-ModInfo(ModInfoDescripton mid); ///< \brief A constructor from ModInfoDescription object.
+ModInfo(ModInfoDescription mid); ///< \brief A constructor from ModInfoDescription object.
 ///< Tries to download and parse remote modinfo file.
 ///< \param mid A ModInfoDescription object.
 ModInfo(std::string path); ///< \brief A construtor from the path to local modinfo file.

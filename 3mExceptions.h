@@ -47,9 +47,9 @@ class BadResponseException: public std::exception {
 private:
 	std::string _response;
 public:
-	OutOfBoundsException(std::string response); ///< \brief A constructor with parameters.
+	BadResponseException(std::string response); ///< \brief A constructor with parameters.
 	///< \param response HTTP response that caused the exception.
-	~OutOfBoundsException() throw(); ///< A destructor, as needed by std::exception.
+	~BadResponseException() throw(); ///< A destructor, as needed by std::exception.
 	const char* what() const throw(); ///< \brief A function returning error message.
 	/// \return Error message.	
 };
