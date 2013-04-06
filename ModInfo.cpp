@@ -353,3 +353,7 @@ void ModInfo::clear() {
 	_edit = false;
 	_localPath = "";
 }
+
+void ModInfo::setModInfoDescription(ModInfoDescripion mid) {
+	_desc = mid;
+}
