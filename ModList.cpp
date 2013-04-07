@@ -3,6 +3,9 @@
 #include "3mExceptions.h"
 #include <vector>
 #include <fstream>
+#include <iostream>
+#include <string>
+#include <cstdlib>
 using namespace mmm;
 
 ModList::ModList() {
@@ -47,7 +50,7 @@ ModList::ModList(ModListDescription mld) {
 	if(line[0] != NULL && line[0] != ' ' && line[0] != '\n' && line[0] != '\r') {
 	if(action == "detect") {
 		if(line[0] == '{') {
-		string name = "";
+			std::string name = "";
 		for(unsigned int i = 1; line[i] != '}' && i < line.length(); i++) {
 			name += line[i];
 		}
@@ -79,8 +82,8 @@ ModList::ModList(ModListDescription mld) {
 			throw ParseException(_desc.getServer() + _desc.getPath(), msg);
 		}
 	} else if(line[0] == '[') {
-		string tmpact = "";
-		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		std::string tmpact = "";
+		for(unsigned int i = 1; line[i] != ']' && i < line.length(); i++) {
 		tmpact += line[i];
 		}
 		if(tmpact == "server" || tmpact == "modinfo") {
@@ -126,18 +129,20 @@ ModList::ModList(ModListDescription mld) {
 	}
 }
 }
-cout << "Got all modinfo descriptions from " << _desc.getName() << ", downloading and parsing modinfos..." << endl;
+std::cout << "Got all modinfo descriptions from " << _desc.getName() << ", downloading and parsing modinfos..." << std::endl;
 for(unsigned int i = 0; i < _modinfos.size(); i++) {
 	try {
 		ModInfo mi(_modinfos[i].getModInfoDescription());
-		cout << "Successfully downloaded and parsed: " << mi.getName() << endl;
+		std::cout << "Successfully downloaded and parsed: " << mi.getName() << std::endl;
 		_modinfos[i] = mi;
 	} catch(NetSocketPP::NetworkException &exc) {
-		cerr << "NetworkException occured in NetSocket++: " << exc.what() << endl;
+		std::cerr << "NetworkException occured in NetSocket++: " << exc.what() << std::endl;
 	} catch(NetSocketPP::SocketException &exc) {
-		cerr << "SocketException occured in NetSocket++: " << exc.what() << endl;
+		std::cerr << "SocketException occured in NetSocket++: " << exc.what() << std::endl;
 	} catch(ParseException &exc) {
-		cerr << "ParseException occured: " << exc.what() << endl;
+		std::cerr << "ParseException occured: " << exc.what() << std::endl;
+	} catch(BadResponseException &exc) {
+		std::cerr << "BadResponseException occured: " << exc.what() << std::endl;
 	}
 }
 }
@@ -150,7 +155,7 @@ ModList::ModList(std::string path) {
 	_localPath = path;
 	_modinfosIterator = -1;
 	_modinfosAtEnd = false;
-	ifstream modlist(_localPath.c_str());
+	std::ifstream modlist(_localPath.c_str());
 	if(!modlist) {
 		throw FileException(_localPath, "reading", "Could not open file!");
 	}
@@ -169,7 +174,7 @@ ModList::ModList(std::string path) {
 	if(line[0] != NULL && line[0] != ' ' && line[0] != '\n' && line[0] != '\r') {
 	if(action == "detect") {
 		if(line[0] == '{') {
-		string name = "";
+			std::string name = "";
 		for(unsigned int i = 1; line[i] != '}' && i < line.length(); i++) {
 			name += line[i];
 		}
@@ -201,8 +206,8 @@ ModList::ModList(std::string path) {
 			throw ParseException(_localPath, msg);
 		}
 	} else if(line[0] == '[') {
-		string tmpact = "";
-		for(int i = 1; line[i] != ']' && i < line.length(); i++) {
+		std::string tmpact = "";
+		for(unsigned int i = 1; line[i] != ']' && i < line.length(); i++) {
 		tmpact += line[i];
 		}
 		if(tmpact == "server" || tmpact == "modinfo") {
@@ -286,7 +291,7 @@ ModInfo ModList::getNextModInfo() {
 ModInfo ModList::getModInfoByName(std::string name) {
 	for(unsigned int i = 0; i < _modinfos.size(); i++) {
 		if(_modinfos[i].getModInfoDescription().getName() == name) {
-			return modinfos[i];
+			return _modinfos[i];
 		}
 	}
 	static ModInfo emptymi;
@@ -303,9 +308,11 @@ void ModList::insertModInfoDescription(ModInfoDescription mid) {
 }
 
 void ModList::deleteModInfo(std::string name) {
-	for(std::vector<ModInfo>::iterator i = _modinfos.begin; i != _modinfos.end(); i++) {
-		if((i -> getModInfoDescription()).getName() == name) {
+	for(std::vector<ModInfo>::iterator i = _modinfos.begin(); i != _modinfos.end(); i++) {
+		mmm::ModInfoDescription mid = i -> getModInfoDescription();
+		if(mid.getName() == name) {
 			_modinfos.erase(i);
+			return;
 		}
 	}
 }
@@ -325,13 +332,22 @@ void ModList::write() {
 	if(!_edit) {
 		throw NonEditableException("Tried to write back remotely obtained modlist file!");
 	}
-	ofstream modlist(_localPath.c_str());
-	if(!ofstream) {
+	std::ofstream modlist(_localPath.c_str());
+	if(!modlist) {
 		throw FileException(_localPath, "writing", "Could not open file!");
 	}
 	for(unsigned int i = 0; i < _modinfos.size(); i++) {
 		ModInfoDescription mid = _modinfos[i].getModInfoDescription();
-		modlist << "{" << mid.getName() << "}" << endl << "[server]" << endl << mid.getServer() << endl << "[modinfo]" << endl << mid.getPath() << endl << "{end}" << endl;
+		modlist << "{" << mid.getName() << "}" << std::endl << "[server]" << std::endl << mid.getServer() << std::endl << "[modinfo]" << std::endl << mid.getPath() << std::endl << "{end}" << std::endl;
 	}
 	modlist.close();
+}
+
+ModListDescription ModList::getModListDescription() {
+	return _desc;
+}
+
+void ModList::setPath(std::string path) {
+	_localPath = path;
+	_edit = true;
 }

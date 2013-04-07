@@ -354,7 +354,7 @@ void ModInfo::clear() {
 	_localPath = "";
 }
 
-void ModInfo::setModInfoDescription(ModInfoDescripion mid) {
+void ModInfo::setModInfoDescription(ModInfoDescription mid) {
 	_desc = mid;
 }
 

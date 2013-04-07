@@ -7,6 +7,7 @@ all:
 	${CXX} ${CXXFLAGS} -o LocalModListTest LocalModListTest.cpp ../LocalModList.cpp ../LocalModDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp ../ConfigFile.cpp
 	${CXX} ${CXXFLAGS} -o RepositoryInfoTest RepositoryInfoTest.cpp ../RepositoryModDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp ../ConfigFile.cpp ../RepositoryInfo.cpp
 	${CXX} ${CXXFLAGS} -o ModInfoTest ModInfoTest.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp
+	${CXX} ${CXXFLAGS} -o ModListTest ModListTest.cpp ../ModList.cpp ../ModListDescription.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp
 debug:
 	${CXX} ${CXXFLAGS} -o ConfigFileTest ConfigFileTest.cpp ../ConfigFile.cpp ../3mExceptions.cpp -g
 	${CXX} ${CXXFLAGS} -o ModDescriptionTest ModDescriptionTest.cpp ../ModDescription.cpp -g
@@ -15,5 +16,6 @@ debug:
 	${CXX} ${CXXFLAGS} -o LocalModListTest LocalModListTest.cpp ../LocalModList.cpp ../LocalModDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp ../ConfigFile.cpp -g
 	${CXX} ${CXXFLAGS} -o RepositoryInfoTest RepositoryInfoTest.cpp ../RepositoryModDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp ../ConfigFile.cpp ../RepositoryInfo.cpp -g
 	${CXX} ${CXXFLAGS} -o ModInfoTest ModInfoTest.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp -g
+	${CXX} ${CXXFLAGS} -o ModListTest ModListTest.cpp ../ModList.cpp ../ModListDescription.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp -g
 clean:
-	rm -rf ConfigFileTest ModDescriptionTest LocalModDescriptionTest ModListListTest LocalModListTest RepositoryInfoTest ModInfoTest
+	rm -rf ConfigFileTest ModDescriptionTest LocalModDescriptionTest ModListListTest LocalModListTest RepositoryInfoTest ModInfoTest ModListTest

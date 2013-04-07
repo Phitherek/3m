@@ -47,6 +47,10 @@ public:
 	///< \return True if modlist iterator reached its end, false otherwise.
 	void write(); ///< A function that writes modlist to local file.
 	void clear(); ///< A function that clears the object.
+	ModListDescription getModListDescription(); ///< \brief A function that gets a ModListDescription object.
+	///< \return A ModListDescription object.
+	void setPath(std::string path); ///< \brief A function that sets path to local modlist file.
+	///< \param path A path to local modlist file.
 };
 }
 #endif
