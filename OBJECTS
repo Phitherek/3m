@@ -9,7 +9,7 @@ ModListDescription: name, server, modlistPath x
 ModInfoDescription: name, server, modinfoPath x
 ModInfo: ModInfoDescription, vector<ModDescription> x
 ParameterParser: actionList, argc, argv
-Action:
+Action: x
 SyncAction
 InstallAction
 UpdateAction
