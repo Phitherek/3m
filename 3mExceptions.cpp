@@ -66,3 +66,27 @@ NonEditableException::~NonEditableException() throw() {
 const char* NonEditableException::what() const throw() {
 	return _what.c_str();
 }
+
+BadParameterException::BadParameterException(std::string parameter) {
+	_action = "global";
+	_parameter = parameter;
+}
+
+BadParameterException::BadParameterException(std::string action, std::string parameter) {
+	_action = action;
+	_parameter = parameter;
+}
+
+BadParameterException::~BadParameterException() throw() {
+	_action = "";
+	_parameter = "";
+}
+
+const char* BadParameterException::what() const throw() {
+	std::string swhat = "";
+	swhat += "(";
+	swhat += _action;
+	swhat += ") Invalid parameter: ";
+	swhat += _parameter;
+	return swhat.c_str();
+}

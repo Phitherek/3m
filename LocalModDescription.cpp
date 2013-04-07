@@ -5,6 +5,24 @@ LocalModDescription::LocalModDescription() {
 	_remoteModlist = "";
 }
 
+LocalModDescription::LocalModDescription(ModDescription cpy) {
+	_name = cpy.getName();
+	_description = cpy.getDescription();
+	_release = cpy.getReleaseNr();
+	cpy.resetDependencyIterator();
+	while(!cpy.dependenciesEnd()) {
+		std::string dep = cpy.getNextDependency();
+		if(dep != "") {
+			_deps.push_back(dep);
+		}
+	}
+	_depsIterator = -1;
+	_depsAtEnd = false;
+	_repotype = cpy.getRepositoryType();
+	_repoaddr = cpy.getRepositoryAddress();
+	_remoteModlist = "";
+}
+
 LocalModDescription::~LocalModDescription() {
 	_remoteModlist = "";
 }

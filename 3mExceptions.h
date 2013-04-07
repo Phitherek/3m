@@ -65,5 +65,21 @@ public:
 	const char* what() const throw(); ///< \brief A function returning error message.
 	/// \return Error message.
 };
+/// \class BadParameterException
+/// \brief An exception to be thrown on bad command line parameter.
+class BadParameterException: public std::exception {
+private:
+	std::string _action;
+	std::string _parameter;
+public:
+	BadParameterException(std::string parameter); ///< \brief A constructor with parameter.
+	///< \param parameter A parameter that caused the exception but is not any action parameter.
+	BadParameterException(std::string action, std::string parameter); ///< \brief A constructor with parameters.
+	///< \param action An action where exception occured.
+	///< \param parameter A parameter that caused the exception.
+	~BadParameterException() throw(); ///< A destructor, as needed by std::exception.
+	const char* what() const throw(); ///< \brief A function returning error message.
+	/// \return Error message.
+};
 }
 #endif
