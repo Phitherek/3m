@@ -9,6 +9,8 @@ all:
 	${CXX} ${CXXFLAGS} -o ModInfoTest ModInfoTest.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp
 	${CXX} ${CXXFLAGS} -o ModListTest ModListTest.cpp ../ModList.cpp ../ModListDescription.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp
 	${CXX} ${CXXFLAGS} -o SyncActionTest SyncActionTest.cpp ../SyncAction.cpp ../Action.cpp ../ConfigFile.cpp ../ModListList.cpp ../3mExceptions.cpp ../ModList.cpp ../ModInfo.cpp ../ModListDescription.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../LocalModDescription.cpp ../LocalModList.cpp -lnetsocketpp
+	${CXX} ${CXXFLAGS} -o QueryActionTest QueryActionTest.cpp ../QueryAction.cpp ../Action.cpp ../ConfigFile.cpp ../3mExceptions.cpp ../LocalModList.cpp ../LocalModDescription.cpp ../ModDescription.cpp ../RepositoryInfo.cpp ../RepositoryModDescription.cpp
+	${CXX} ${CXXFLAGS} -o LocalQueryActionTest LocalQueryActionTest.cpp ../QueryAction.cpp ../Action.cpp ../ConfigFile.cpp ../3mExceptions.cpp ../LocalModList.cpp ../LocalModDescription.cpp ../ModDescription.cpp ../RepositoryInfo.cpp ../RepositoryModDescription.cpp
 debug:
 	${CXX} ${CXXFLAGS} -o ConfigFileTest ConfigFileTest.cpp ../ConfigFile.cpp ../3mExceptions.cpp -g
 	${CXX} ${CXXFLAGS} -o ModDescriptionTest ModDescriptionTest.cpp ../ModDescription.cpp -g
@@ -19,5 +21,7 @@ debug:
 	${CXX} ${CXXFLAGS} -o ModInfoTest ModInfoTest.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp -g
 	${CXX} ${CXXFLAGS} -o ModListTest ModListTest.cpp ../ModList.cpp ../ModListDescription.cpp ../ModInfo.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../3mExceptions.cpp -lnetsocketpp -g
 	${CXX} ${CXXFLAGS} -o SyncActionTest SyncActionTest.cpp ../SyncAction.cpp ../Action.cpp ../ConfigFile.cpp ../ModListList.cpp ../3mExceptions.cpp ../ModList.cpp ../ModInfo.cpp ../ModListDescription.cpp ../ModInfoDescription.cpp ../ModDescription.cpp ../LocalModDescription.cpp ../LocalModList.cpp -lnetsocketpp -g
+	${CXX} ${CXXFLAGS} -o QueryActionTest QueryActionTest.cpp ../QueryAction.cpp ../Action.cpp ../ConfigFile.cpp ../3mExceptions.cpp ../LocalModList.cpp ../LocalModDescription.cpp ../ModDescription.cpp ../RepositoryInfo.cpp ../RepositoryModDescription.cpp -g
+	${CXX} ${CXXFLAGS} -o LocalQueryActionTest LocalQueryActionTest.cpp ../QueryAction.cpp ../Action.cpp ../ConfigFile.cpp ../3mExceptions.cpp ../LocalModList.cpp ../LocalModDescription.cpp ../ModDescription.cpp ../RepositoryInfo.cpp ../RepositoryModDescription.cpp -g
 clean:
-	rm -rf ConfigFileTest ModDescriptionTest LocalModDescriptionTest ModListListTest LocalModListTest RepositoryInfoTest ModInfoTest ModListTest SyncActionTest
+	rm -rf ConfigFileTest ModDescriptionTest LocalModDescriptionTest ModListListTest LocalModListTest RepositoryInfoTest ModInfoTest ModListTest SyncActionTest QueryActionTest LocalQueryActionTest

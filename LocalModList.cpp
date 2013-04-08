@@ -185,7 +185,7 @@ while(!lmfile.eof()) {
 }
 lmfile.close();
 _modlistIterator = -1;
-_modlistAtEnd = true;
+_modlistAtEnd = false;
 }
 
 LocalModList::~LocalModList() {

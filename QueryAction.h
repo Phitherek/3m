@@ -4,6 +4,8 @@
 #include "3mExceptions.h"
 #include "ModDescription.h"
 #include "LocalModDescription.h"
+#include "RepositoryInfo.h"
+#include "RepositoryModDescription.h"
 #include "LocalModList.h"
 #include "Action.h"
 #include <string>
