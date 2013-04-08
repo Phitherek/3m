@@ -135,6 +135,7 @@ for(unsigned int i = 0; i < _modinfos.size(); i++) {
 		ModInfo mi(_modinfos[i].getModInfoDescription());
 		std::cout << "Successfully downloaded and parsed: " << mi.getName() << std::endl;
 		_modinfos[i] = mi;
+		sleep(2); // This is to prevent DoS-ing rubenwardy' s hosting...
 	} catch(NetSocketPP::NetworkException &exc) {
 		std::cerr << "NetworkException occured in NetSocket++: " << exc.what() << std::endl;
 	} catch(NetSocketPP::SocketException &exc) {
