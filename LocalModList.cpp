@@ -224,6 +224,16 @@ LocalModDescription LocalModList::getModDescriptionByName(std::string name) {
 	return emptylmd;
 }
 
+LocalModDescription LocalModList::getModDescriptionByNameFrom(std::string name, std::string remoteModlist) {
+	for(unsigned int i = 0; i < _modlist.size(); i++) {
+		if(_modlist[i].getName() == name && _modlist[i].getRemoteModlistName() == remoteModlist) {
+			return _modlist[i];
+		}
+	}
+	LocalModDescription emptylmd;
+	return emptylmd;
+}
+
 void LocalModList::resetModDescriptionIterator() {
 	if(_modlistAtEnd) {
 		_modlistAtEnd = false;

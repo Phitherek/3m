@@ -89,7 +89,22 @@ void QueryAction::run() {
 			}
 		} else {
 			for(unsigned int i = 0; i < parameters.size(); i++) {
-				mmm::LocalModDescription lmd = lml.getModDescriptionByName(parameters[i]);
+				mmm::LocalModDescription lmd;
+				std::string modname = "";
+				std::string modlistname = "";
+				for(unsigned int j = 0; j < parameters[i].length(); j++) {
+					if(parameters[i][j] == '/') {
+						modlistname = modname;
+						modname = "";
+					} else {
+						modname += parameters[i][j];
+					}
+				}
+				if(modlistname == "") {
+				lmd = lml.getModDescriptionByName(modname);
+				} else {
+				lmd = lml.getModDescriptionByNameFrom(modname, modlistname);	
+				}
 					if(lmd.getName() != "" && lmd.getReleaseNr() > 0 && lmd.getDescription() != "" && lmd.getRemoteModlistName() != "") {
 				std::cout << lmd.getRemoteModlistName() << "/" << lmd.getName() << " (release: " << lmd.getReleaseNr() << ")";
 				if(repoinfook) {
@@ -115,7 +130,11 @@ void QueryAction::run() {
 				}
 				}
 			} else {
-				std::cout << parameters[i] << " not found!" << std::endl;
+				if(modlistname == "") {
+				std::cout << modname << " not found!" << std::endl;
+				} else {
+				std::cout << modname << " not found in " << modlistname << "!" << std::endl;	
+				}
 			}
 			}
 		}

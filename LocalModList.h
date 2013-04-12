@@ -34,6 +34,10 @@ public:
 	LocalModDescription getModDescriptionByName(std::string name); ///< \brief A function, that searches a mod name and returns its description.
 	///< \param name A mod name.
 	///< \return Description of the mod.
+	LocalModDescription getModDescriptionByNameFrom(std::string name, std::string remoteModlist); ///< \brief A function, that searches a mod name in given remote modlist and returns its description.
+	///< \param name A mod name.
+	///< \param remoteModlist A name of remote modlist to search in.
+	///< \return Description of the mod.
 	void resetModDescriptionIterator(); ///< A function that resets iterator of the modlist.
 	bool modDescriptionsAtEnd(); ///< \brief A function that returns if the modlist iterator has reached its end.
 	///< \return True if modlist iterator is at end, false otherwise.
